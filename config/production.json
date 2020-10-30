@@ -1,0 +1,6 @@
+{
+  "port": 5000,
+  "jwtSecretKey": "Happy eternal life",
+  "mongoUri": "mongodb+srv://default:87654321@cluster0.9izir.azure.mongodb.net/app?retryWrites=true&w=majority",
+  "baseUrl": "http://localhost:5000"
+}
