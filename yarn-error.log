@@ -1,0 +1,62 @@
+Arguments: 
+  /Users/maxboudnik/.nvm/versions/node/v14.7.0/bin/node /usr/local/Cellar/yarn/1.22.4/libexec/bin/yarn.js install
+
+PATH: 
+  /Users/maxboudnik/.nvm/versions/node/v14.7.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/mysql/bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  14.7.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/maxboudnik/projects/dropnotes/package.json: Unexpected token } in JSON at position 729
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:310:30)
+      at /usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "dropnotes",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+      "start": "cross-env NODE_ENV=production node app.js",
+      "server": "nodemon app.js",
+      "client": "yarn --cwd client start",
+      "client:install": "yarn --cwd client install",
+      "client:build": "yarn --cwd client run build",
+      "dev": "coross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\""
+    },
+    "keywords": [
+      "react"
+    ],
+    "author": "Max Boudnik <maxkilter@yahoo.com>",
+    "license": "ISC",
+    "dependencies": {
+      "bcryptjs": "^2.4.3",
+      "config": "^3.3.2",
+      "express": "^4.17.1",
+      "express-validator": "^6.6.1",
+      "jsonwebtoken": "^8.5.1",
+      "mongoose": "^5.10.9",
+    },
+    "devDependencies": {
+      "concurrently": "^5.3.0",
+      "cross-env": "^7.0.2",
+      "nodemon": "^2.0.6"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
