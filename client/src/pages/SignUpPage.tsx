@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useState, useEffect, FormEvent } from "react";
+import React, {
+  ChangeEvent,
+  useState,
+  useEffect,
+  FormEvent,
+  useContext,
+} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +18,7 @@ import Notification from "../components/Notification";
 import { makeStyles } from "@material-ui/core/styles";
 import { useRequest } from "../hooks/useRequest";
 import { Color } from "@material-ui/lab";
+import { AuthContext } from "../context/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,7 +46,8 @@ const setSeverity = (status: number) => {
 
 const SignUpPage = () => {
   const classes = useStyles();
-  const { loading, request, error, clearError } = useRequest();
+  const auth = useContext(AuthContext);
+  const { isLoading, request, error, clearError } = useRequest();
   const [notification, setNotification] = useState({
     isOpen: false,
     message: "",
@@ -74,12 +82,19 @@ const SignUpPage = () => {
     event.preventDefault();
 
     try {
-      const data = await request("/api/auth/register", "POST", { ...form });
+      const signUpData = await request("/api/auth/register", "POST", {
+        ...form,
+      });
       setNotification({
         isOpen: true,
-        message: data.message,
-        severity: setSeverity(data.status),
+        message: signUpData.message,
+        severity: setSeverity(signUpData.status),
       });
+      const signIndData = await request("/api/auth/login", "POST", {
+        email: form.email,
+        password: form.password,
+      });
+      auth.logIn(signIndData.token, signIndData.userId);
     } catch (e) {}
   };
 
@@ -110,7 +125,6 @@ const SignUpPage = () => {
                   id="firstName"
                   label="First Name"
                   autoFocus
-                  // onChange={changeHandler}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -154,7 +168,7 @@ const SignUpPage = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
-              disabled={loading}
+              disabled={isLoading}
             >
               Sign Up
             </Button>

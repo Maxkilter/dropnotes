@@ -1,10 +1,11 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent, useContext } from "react";
 import {
   fade,
   makeStyles,
   Theme,
   createStyles,
 } from "@material-ui/core/styles";
+import { useHistory } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -13,8 +14,11 @@ import InputBase from "@material-ui/core/InputBase";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import SearchIcon from "@material-ui/icons/Search";
+import LockIcon from "@material-ui/icons/Lock";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
+import { AuthContext } from "../context/AuthContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,6 +98,8 @@ interface Props {
 
 const Navbar = (props: Props) => {
   const { isAuthenticated } = props;
+  const auth = useContext(AuthContext);
+  const history = useHistory();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [
@@ -104,22 +110,29 @@ const Navbar = (props: Props) => {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  function handleProfileMenuOpen(event: MouseEvent<HTMLElement>) {
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  }
+  };
 
-  function handleMobileMenuClose() {
+  const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  }
+  };
 
-  function handleMenuClose() {
+  const handleMenuClose = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
-  }
+  };
 
-  function handleMobileMenuOpen(event: MouseEvent<HTMLElement>) {
+  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
-  }
+  };
+
+  const handleOut = (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    auth.logOut();
+    history.push("/");
+    handleMenuClose();
+  };
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -132,8 +145,16 @@ const Navbar = (props: Props) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {isAuthenticated ? (
+        <MenuItem onClick={handleOut}>
+          <ExitToAppIcon />
+          <span>Log out</span>
+        </MenuItem>
+      ) : (
+        <MenuItem onClick={handleMenuClose}>
+          <LockIcon />
+        </MenuItem>
+      )}
     </Menu>
   );
 

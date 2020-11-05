@@ -3,12 +3,12 @@ import { useCallback, useState } from "react";
 const errorMessage = "Something went wrong, please try more or try later :-(";
 
 export const useRequest = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
   const request = useCallback(
     async (url, method = "GET", body, headers = {}) => {
-      setLoading(true);
+      setIsLoading(true);
 
       let formattedBody;
 
@@ -29,11 +29,11 @@ export const useRequest = () => {
           throw new Error(data.message);
         }
 
-        setLoading(false);
+        setIsLoading(false);
 
         return data;
       } catch (e) {
-        setLoading(false);
+        setIsLoading(false);
         setError(errorMessage);
         throw e.message;
       }
@@ -43,5 +43,5 @@ export const useRequest = () => {
 
   const clearError = useCallback(() => setError(null), []);
 
-  return { loading, error, request, clearError };
+  return { isLoading, error, request, clearError };
 };

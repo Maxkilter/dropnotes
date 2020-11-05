@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -11,6 +17,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Notification from "../components/Notification";
 import { Color } from "@material-ui/lab";
+import { useRequest } from "../hooks/useRequest";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,12 +43,50 @@ const useStyles = makeStyles((theme) => ({
 
 const SignInPage = () => {
   const classes = useStyles();
+  const auth = useContext(AuthContext);
+  const { isLoading, request, error, clearError } = useRequest();
 
   const [notification, setNotification] = useState({
     isOpen: false,
     message: "",
     severity: "info" as Color,
   });
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  useEffect(() => {
+    if (error) {
+      setNotification({
+        isOpen: true,
+        message: error,
+        severity: "error",
+      });
+      clearError();
+    }
+  }, [error, clearError]);
+
+  const signInHandler = async (event: FormEvent) => {
+    event.preventDefault();
+
+    try {
+      const data = await request("/api/auth/login", "POST", { ...form });
+      auth.logIn(data.token, data.userId);
+    } catch (e) {}
+  };
+
+  const changeHandler = (event: ChangeEvent<HTMLFormElement>) => {
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -52,7 +99,11 @@ const SignInPage = () => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form
+            className={classes.form}
+            onSubmit={signInHandler}
+            onChange={changeHandler}
+          >
             <TextField
               variant="outlined"
               margin="normal"
@@ -81,6 +132,7 @@ const SignInPage = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
+              disabled={isLoading}
             >
               Sign In
             </Button>
