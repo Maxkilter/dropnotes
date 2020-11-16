@@ -85,7 +85,7 @@ const SignInPage = () => {
   };
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader darken />;
   }
 
   return (

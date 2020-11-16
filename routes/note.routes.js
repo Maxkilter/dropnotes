@@ -1,0 +1,42 @@
+const { Router } = require("express");
+const router = Router();
+const Note = require("../models/Note");
+const authMid = require("../middleware/auth.middleware");
+
+router.post("/create", authMid, async (req, res) => {
+  try {
+    const { title, body } = req.body;
+
+    const newNote = new Note({
+      title,
+      body,
+      owner: req.user.userId,
+    });
+
+    await newNote.save();
+
+    res.status(201).json({ newNote });
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong, try again :-(" });
+  }
+});
+
+router.get("/", authMid, async (req, res) => {
+  try {
+    const notes = await Note.find({ owner: req.user.userId });
+    res.json(notes);
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong, try again :-(" });
+  }
+});
+
+router.get("/:id", authMid, async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    res.json(note);
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong, try again :-(" });
+  }
+});
+
+module.exports = router;

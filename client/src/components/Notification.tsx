@@ -24,7 +24,7 @@ const Notification = (props: Props) => {
     if (reason === "clickaway") {
       return;
     }
-    setIsOpen({ isOpen: false });
+    setIsOpen({ ...props, isOpen: false });
   };
 
   return (

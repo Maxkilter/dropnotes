@@ -1,39 +1,28 @@
-.note-wrapper {
+.new-or-edit-note-wrapper {
   display: flex;
   justify-content: center;
   margin-top: 32px;
   min-height: 44px;
 }
 
-.note-box {
+.new-or-edit-note-box {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   width: 40%;
   padding: 16px;
 }
 
-.note-label,
-.note-label-title {
-  color: #80868b;
-  position: absolute;
-  width: 40%;
-  pointer-events: none;
-}
-
-.note-label-title {
+.new-or-edit-note-title {
   font-weight: bold;
-}
-
-.note-title-field {
   margin-bottom: 16px;
 }
 
-.note-title {
-  font-weight: bold;
-}
-
-.note-body,
-.note-title {
+.new-or-edit-note-body,
+.new-or-edit-note-title {
+  &:empty:before {
+    content: attr(data-placeholder);
+    color: #80868b;
+  }
   &:focus {
     outline: none;
   }

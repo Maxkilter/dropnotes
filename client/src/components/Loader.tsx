@@ -7,20 +7,32 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     backdrop: {
       zIndex: theme.zIndex.drawer + 1,
-      color: "#fff",
+      // color: "#fff",
+      color: "#3f51b5",
     },
   })
 );
 
-const Loader = () => {
+interface Props {
+  darken?: boolean;
+}
+
+const Loader = (props: Props) => {
+  const { darken } = props;
   const classes = useStyles();
 
   return (
-    <div>
-      <Backdrop className={classes.backdrop} open>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    </div>
+    <>
+      {darken ? (
+        <Backdrop className={classes.backdrop} open invisible={darken}>
+          <CircularProgress color="inherit" size={70} thickness={2} />
+        </Backdrop>
+      ) : (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress />
+        </div>
+      )}
+    </>
   );
 };
 
