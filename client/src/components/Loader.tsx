@@ -3,6 +3,8 @@ import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
+import "../styles/LoaderStyles.scss";
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     backdrop: {

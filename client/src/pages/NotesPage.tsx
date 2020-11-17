@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import NewOrEditNote from "../components/NewOrEditNote";
 import Note, { NoteProps } from "../components/Note";
 
-
+import "../styles/NotesPageStyles.scss";
 
 const NotesPage = () => {
   const [notes, setNotes] = useState([]);

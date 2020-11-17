@@ -32,3 +32,13 @@
     outline: none;
   }
 }
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 12px;
+  :first-child {
+    cursor: pointer;
+    color: #80868b;
+  }
+}

@@ -37,6 +37,8 @@ const NewOrEditNote = (props: Props) => {
     severity: "info" as Color,
   });
 
+  const isNoteFilled = note.body || note.title;
+
   const ref = useRef(null);
   const { request, error, clearError, isLoading } = useRequest();
   const auth = useContext(AuthContext);
@@ -82,7 +84,7 @@ const NewOrEditNote = (props: Props) => {
   };
 
   const addingFinished = useCallback(async () => {
-    if (note.title || note.body) {
+    if (isNoteFilled) {
       try {
         const newNote = await request(
           "/api/notes/create",
@@ -101,7 +103,7 @@ const NewOrEditNote = (props: Props) => {
 
     setNote(defaultNoteState);
     setIsAddNoteExpanded(false);
-  }, [auth.token, request, note.body, note.title]);
+  }, [auth.token, request, isNoteFilled, fetchNotes, note.title, note.body]);
 
   useOutsideClick(ref, () => addingFinished());
 
@@ -135,6 +137,13 @@ const NewOrEditNote = (props: Props) => {
               onInput={handleChange}
               onClick={addNoteExpand}
             />
+          )}
+          {isAddNoteExpanded && (
+            <div className="button-wrapper">
+              <div role="button" onClick={addingFinished}>
+                {isNoteFilled ? "Add" : "Close"}
+              </div>
+            </div>
           )}
         </div>
       </div>
