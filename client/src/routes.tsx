@@ -8,11 +8,10 @@ const navigation = (isAuthenticated: boolean) => {
   if (isAuthenticated) {
     return (
       <Switch>
-        <Route path="/notes">
+        <Route path="/" exact>
           <NotesPage />
         </Route>
-        <Route path="/note/:id">{/*<DetailPage />*/}</Route>
-        <Redirect to="/notes" />
+        <Redirect to="/" />
       </Switch>
     );
   }

@@ -5,6 +5,7 @@ import React, {
   useContext,
   useCallback,
   useEffect,
+  memo,
   SetStateAction,
 } from "react";
 import Loader from "./Loader";
@@ -37,7 +38,7 @@ const NewOrEditNote = (props: Props) => {
   });
 
   const ref = useRef(null);
-  let { request, error, clearError, isLoading } = useRequest();
+  const { request, error, clearError, isLoading } = useRequest();
   const auth = useContext(AuthContext);
 
   const fetchNotes = useCallback(async () => {
@@ -47,7 +48,7 @@ const NewOrEditNote = (props: Props) => {
       });
       setNotes(fetched);
     } catch (e) {}
-  }, [auth.token, request]);
+  }, [auth.token, request, setNotes]);
 
   useEffect(() => {
     fetchNotes();
@@ -80,7 +81,7 @@ const NewOrEditNote = (props: Props) => {
     }
   };
 
-  const addingFinished = async () => {
+  const addingFinished = useCallback(async () => {
     if (note.title || note.body) {
       try {
         const newNote = await request(
@@ -100,7 +101,7 @@ const NewOrEditNote = (props: Props) => {
 
     setNote(defaultNoteState);
     setIsAddNoteExpanded(false);
-  };
+  }, [auth.token, request, note.body, note.title]);
 
   useOutsideClick(ref, () => addingFinished());
 
@@ -108,7 +109,7 @@ const NewOrEditNote = (props: Props) => {
     <>
       <div className="new-or-edit-note-wrapper">
         <div className="new-or-edit-note-box" ref={ref}>
-          {isAddNoteExpanded && (
+          {isAddNoteExpanded && !isLoading && (
             <div
               id="title"
               className="new-or-edit-note-title"
@@ -130,7 +131,7 @@ const NewOrEditNote = (props: Props) => {
               aria-multiline
               role="textbox"
               tabIndex={0}
-              data-placeholder="Take a note..."
+              data-placeholder="Add a note..."
               onInput={handleChange}
               onClick={addNoteExpand}
             />
@@ -147,4 +148,4 @@ const NewOrEditNote = (props: Props) => {
   );
 };
 
-export default NewOrEditNote;
+export default memo(NewOrEditNote);

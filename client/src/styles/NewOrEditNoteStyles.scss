@@ -13,8 +13,13 @@
 }
 
 .new-or-edit-note-title {
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 500;
   margin-bottom: 16px;
+}
+
+.new-or-edit-note-body {
+  color: #3f51b5;
 }
 
 .new-or-edit-note-body,

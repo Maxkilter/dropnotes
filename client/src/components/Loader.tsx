@@ -7,8 +7,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     backdrop: {
       zIndex: theme.zIndex.drawer + 1,
-      // color: "#fff",
-      color: "#3f51b5",
+      color: "#fff",
     },
   })
 );
@@ -24,11 +23,11 @@ const Loader = (props: Props) => {
   return (
     <>
       {darken ? (
-        <Backdrop className={classes.backdrop} open invisible={darken}>
+        <Backdrop className={classes.backdrop} open>
           <CircularProgress color="inherit" size={70} thickness={2} />
         </Backdrop>
       ) : (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="circular-progress-wrapper">
           <CircularProgress />
         </div>
       )}
