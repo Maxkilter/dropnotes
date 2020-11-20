@@ -1,10 +1,5 @@
-import React, {
-  ChangeEvent,
-  useState,
-  useEffect,
-  FormEvent,
-  useContext,
-} from "react";
+//@ts-nocheck
+import React, { ChangeEvent, useState, FormEvent, useContext } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -14,11 +9,9 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import Notification from "../components/Notification";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRequest } from "../hooks/useRequest";
-import { Color } from "@material-ui/lab";
-import { AuthContext } from "../context/AuthContext";
+// import { Color } from "@material-ui/lab";
+import { StoreContext } from "../appStore";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,36 +33,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const setSeverity = (status: number) => {
-  return status === 201 ? "success" : "error";
-};
-
 const SignUpPage = () => {
   const classes = useStyles();
-  const auth = useContext(AuthContext);
-  const { isLoading, request, error, clearError } = useRequest();
-  const [notification, setNotification] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info" as Color,
-  });
+  const { logIn, setNotification, request, isLoading } = useContext(
+    StoreContext
+  );
+
   const [form, setForm] = useState({
     firstName: null,
     lastName: null,
     email: "",
     password: "",
   });
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError]);
 
   const changeHandler = (event: ChangeEvent<HTMLFormElement>) => {
     setForm({
@@ -85,110 +60,105 @@ const SignUpPage = () => {
       const signUpData = await request("/api/auth/register", "POST", {
         ...form,
       });
+
       setNotification({
         isOpen: true,
         message: signUpData.message,
-        severity: setSeverity(signUpData.status),
+        // severity: Color["success"],
       });
+
       const signIndData = await request("/api/auth/login", "POST", {
         email: form.email,
         password: form.password,
       });
-      auth.logIn(signIndData.token, signIndData.userId);
+
+      logIn(signIndData.token, signIndData.userId);
     } catch (e) {}
   };
 
   return (
-    <>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <form
-            className={classes.form}
-            onSubmit={signUpHandler}
-            onChange={changeHandler}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        <form
+          className={classes.form}
+          onSubmit={signUpHandler}
+          onChange={changeHandler}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="lname"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            disabled={isLoading}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                />
-              </Grid>
+            Sign Up
+          </Button>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Link href="/sign-in" variant="body2">
+                Already have an account? Sign in
+              </Link>
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={isLoading}
-            >
-              Sign Up
-            </Button>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="/sign-in" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Container>
-      <Notification
-        isOpen={notification.isOpen}
-        setIsOpen={setNotification}
-        message={notification.message}
-        severity={notification.severity}
-      />
-    </>
+          </Grid>
+        </form>
+      </div>
+    </Container>
   );
 };
 

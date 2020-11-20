@@ -1,10 +1,5 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+//@ts-nocheck
+import React, { ChangeEvent, FormEvent, useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,11 +10,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Notification from "../components/Notification";
-import { Color } from "@material-ui/lab";
-import { useRequest } from "../hooks/useRequest";
-import { AuthContext } from "../context/AuthContext";
 import Loader from "../components/Loader";
+import { StoreContext } from "../appStore";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,37 +35,19 @@ const useStyles = makeStyles((theme) => ({
 
 const SignInPage = () => {
   const classes = useStyles();
-  const auth = useContext(AuthContext);
-  const { isLoading, request, error, clearError } = useRequest();
-
-  const [notification, setNotification] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info" as Color,
-  });
+  const { logIn, isLoading, request } = useContext(StoreContext);
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError]);
-
   const signInHandler = async (event: FormEvent) => {
     event.preventDefault();
 
     try {
       const data = await request("/api/auth/login", "POST", { ...form });
-      auth.logIn(data.token, data.userId);
+      logIn(data.token, data.userId);
     } catch (e) {}
   };
 
@@ -89,70 +63,62 @@ const SignInPage = () => {
   }
 
   return (
-    <>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <form
-            className={classes.form}
-            onSubmit={signInHandler}
-            onChange={changeHandler}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <form
+          className={classes.form}
+          onSubmit={signInHandler}
+          onChange={changeHandler}
+        >
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            disabled={isLoading}
           >
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={isLoading}
-            >
-              Sign In
-            </Button>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="/sign-up" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
+            Sign In
+          </Button>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Link href="/sign-up" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
             </Grid>
-          </form>
-        </div>
-      </Container>
-      <Notification
-        isOpen={notification.isOpen}
-        setIsOpen={setNotification}
-        message={notification.message}
-        severity={notification.severity}
-      />
-    </>
+          </Grid>
+        </form>
+      </div>
+    </Container>
   );
 };
 

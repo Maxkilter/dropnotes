@@ -1,13 +1,12 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, memo, useContext } from "react";
 import NewOrEditNote from "../components/NewOrEditNote";
 import Note, { NoteProps } from "../components/Note";
+import { StoreContext } from "../appStore";
 
 import "../styles/NotesPageStyles.scss";
 
 const NotesPage = () => {
-  const [notes, setNotes] = useState([]);
-  const [isEditMode, setIsEditMode] = useState(false);
-
+  const { notes } = useContext(StoreContext);
   const renderNotes = useCallback((notes: NoteProps[]) => {
     return notes
       .reverse()
@@ -23,10 +22,10 @@ const NotesPage = () => {
 
   return (
     <>
-      <NewOrEditNote isEditMode={isEditMode} setNotes={setNotes} />
+      <NewOrEditNote />
       <div className="notes-container">{renderNotes(notes)}</div>
     </>
   );
 };
 
-export default NotesPage;
+export default memo(NotesPage);

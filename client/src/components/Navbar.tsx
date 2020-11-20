@@ -1,11 +1,10 @@
-import React, { useState, MouseEvent, useContext } from "react";
+import React, { useState, MouseEvent, useContext, ChangeEvent } from "react";
 import {
   fade,
   makeStyles,
   Theme,
   createStyles,
 } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -18,7 +17,8 @@ import LockIcon from "@material-ui/icons/Lock";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { AuthContext } from "../context/AuthContext";
+import { useHistory } from "react-router-dom";
+import { StoreContext } from "../appStore";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -98,7 +98,7 @@ interface Props {
 
 const Navbar = (props: Props) => {
   const { isAuthenticated } = props;
-  const auth = useContext(AuthContext);
+  const { logOut, setSearchQuery } = useContext(StoreContext);
   const history = useHistory();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -129,10 +129,13 @@ const Navbar = (props: Props) => {
 
   const handleOut = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    auth.logOut();
+    logOut();
     history.push("/");
     handleMenuClose();
   };
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) =>
+    setSearchQuery(event.target.value);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -205,6 +208,7 @@ const Navbar = (props: Props) => {
                   input: classes.inputInput,
                 }}
                 inputProps={{ "aria-label": "search" }}
+                onChange={handleSearch}
               />
             </div>
           )}

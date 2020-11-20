@@ -1,71 +1,32 @@
+//@ts-nocheck
 import React, {
   useState,
   useRef,
   ChangeEvent,
   useContext,
   useCallback,
-  useEffect,
   memo,
-  SetStateAction,
 } from "react";
 import Loader from "./Loader";
-import Notification from "./Notification";
 import { useOutsideClick } from "../hooks/useOutsideClick";
-import { useRequest } from "../hooks/useRequest";
-import { AuthContext } from "../context/AuthContext";
-import { Color } from "@material-ui/lab";
+import { StoreContext } from "../appStore";
 
 import "../styles/NewOrEditNoteStyles.scss";
-
-interface Props {
-  isEditMode?: boolean;
-  setNotes: SetStateAction<any>;
-}
 
 const defaultNoteState = {
   title: "",
   body: "",
 };
 
-const NewOrEditNote = (props: Props) => {
-  const { setNotes } = props;
+const NewOrEditNote = () => {
   const [isAddNoteExpanded, setIsAddNoteExpanded] = useState(false);
   const [note, setNote] = useState(defaultNoteState);
-  const [notification, setNotification] = useState({
-    isOpen: false,
-    message: "",
-    severity: "info" as Color,
-  });
 
   const isNoteFilled = note.body || note.title;
 
   const ref = useRef(null);
-  const { request, error, clearError, isLoading } = useRequest();
-  const auth = useContext(AuthContext);
 
-  const fetchNotes = useCallback(async () => {
-    try {
-      const fetched = await request("/api/notes", "GET", null, {
-        Authorization: `Bearer ${auth.token}`,
-      });
-      setNotes(fetched);
-    } catch (e) {}
-  }, [auth.token, request, setNotes]);
-
-  useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError]);
+  const { token, request, isLoading, fetchNotes } = useContext(StoreContext);
 
   const handleChange = (e: ChangeEvent<HTMLDivElement>) =>
     setNote({ ...note, [e.target.id]: e.target.textContent });
@@ -91,7 +52,7 @@ const NewOrEditNote = (props: Props) => {
           "POST",
           { title: note.title, body: note.body },
           {
-            Authorization: `Bearer ${auth.token}`,
+            Authorization: `Bearer ${token}`,
           }
         );
 
@@ -103,7 +64,7 @@ const NewOrEditNote = (props: Props) => {
 
     setNote(defaultNoteState);
     setIsAddNoteExpanded(false);
-  }, [auth.token, request, isNoteFilled, fetchNotes, note.title, note.body]);
+  }, [token, request, fetchNotes, isNoteFilled, note.title, note.body]);
 
   useOutsideClick(ref, () => addingFinished());
 
@@ -147,12 +108,6 @@ const NewOrEditNote = (props: Props) => {
           )}
         </div>
       </div>
-      <Notification
-        isOpen={notification.isOpen}
-        setIsOpen={setNotification}
-        message={notification.message}
-        severity={notification.severity}
-      />
     </>
   );
 };
