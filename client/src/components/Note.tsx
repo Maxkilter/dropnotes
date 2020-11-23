@@ -1,10 +1,10 @@
-import React, { useCallback, useContext } from "react";
+import React from "react";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import NoteMenu from "./NoteMenu";
 import { makeStyles } from "@material-ui/core/styles";
-import { StoreContext } from "../appStore";
 
 const useStyles = makeStyles({
   root: {
@@ -29,22 +29,8 @@ const Note = (props: NoteProps) => {
   const { title, body, _id } = props;
   const classes = useStyles();
 
-  const { token, request, fetchNotes } = useContext(StoreContext);
-
-  const onClick = useCallback(async () => {
-    try {
-      const fetched = await request(`api/notes/${_id}`, "DELETE", null, {
-        Authorization: `Bearer ${token}`,
-      });
-      // @ts-ignore
-      if (fetched) {
-        fetchNotes();
-      }
-    } catch (e) {}
-  }, [_id, request, token, fetchNotes]);
-
   return (
-    <Card className={classes.root} onClick={onClick}>
+    <Card className={classes.root} onClick={() => {}}>
       <CardActionArea>
         <CardContent className={classes.content}>
           {title && <Typography variant="h6">{title}</Typography>}
@@ -53,6 +39,7 @@ const Note = (props: NoteProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
+      <NoteMenu noteId={_id} />
     </Card>
   );
 };
