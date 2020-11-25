@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import NoteMenu from "./NoteMenu";
 import { makeStyles } from "@material-ui/core/styles";
+import { StoreContext } from "../appStore";
 
 const useStyles = makeStyles({
   root: {
     width: 250,
-    marginRight: 24,
-    marginBottom: 24,
   },
   content: {
     height: 330,
     overflowY: "scroll",
-    margin: "12px 0",
+    marginBottom: 12,
   },
 });
 
@@ -29,18 +28,27 @@ const Note = (props: NoteProps) => {
   const { title, body, _id } = props;
   const classes = useStyles();
 
+  const { setIsModalOpen, setEditNote } = useContext(StoreContext);
+
+  const editNote = () => {
+    setEditNote({ _id, title, body });
+    setIsModalOpen(true);
+  };
+
   return (
-    <Card className={classes.root} onClick={() => {}}>
-      <CardActionArea>
-        <CardContent className={classes.content}>
-          {title && <Typography variant="h6">{title}</Typography>}
-          <Typography variant="body1" color="primary" paragraph>
-            {body}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+    <div>
+      <Card className={classes.root} onClick={editNote}>
+        <CardActionArea>
+          <CardContent className={classes.content}>
+            {title && <Typography variant="body1">{title}</Typography>}
+            <Typography variant="body2" color="primary" paragraph>
+              {body}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
       <NoteMenu noteId={_id} />
-    </Card>
+    </div>
   );
 };
 

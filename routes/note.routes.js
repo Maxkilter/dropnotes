@@ -39,6 +39,15 @@ router.get("/:id", authMid, async (req, res) => {
   }
 });
 
+router.put("/:id", authMid, async (req, res) => {
+  try {
+    const note = await Note.findByIdAndUpdate(req.params.id, req.body);
+    res.json(note);
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong, try again :-(" });
+  }
+});
+
 router.delete("/:id", authMid, async (req, res) => {
   try {
     await Note.findByIdAndRemove(req.params.id);

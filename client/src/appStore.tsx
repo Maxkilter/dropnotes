@@ -21,15 +21,19 @@ const defaultNotificationState = {
 export const StoreContext = createContext({
   isReady: false,
   isLoading: false,
+  isModalOpen: false,
   searchQuery: "",
   notes: [],
+  editNote: { _id: "", title: "", body: "" },
   token: null,
   userId: null,
   notification: defaultNotificationState,
   logIn: (jwtToken: string, id: string) => {},
   logOut: () => {},
-  request: (a, b, c, d) => {},
+  request: (link, method, body, headers) => {},
   setSearchQuery: (e: string): Dispatch<SetStateAction<string>> => () => {},
+  setEditNote: ({ _id, title, body }) => {},
+  setIsModalOpen: (value: boolean) => {},
   setNotification: ({
     isOpen,
     message,
@@ -48,7 +52,8 @@ export const StoreProvider = ({ children }: any) => {
   const [isReady, setIsReady] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [notes, setNotes] = useState([]);
-
+  const [editNote, setEditNote] = useState({ _id: "", title: "", body: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState(defaultNotificationState);
 
   const { request, isLoading, clearError, error } = useRequest();
@@ -58,7 +63,7 @@ export const StoreProvider = ({ children }: any) => {
       const fetched = await request("/api/notes", "GET", null, {
         Authorization: `Bearer ${token}`,
       });
-      setNotes(fetched);
+      setNotes(fetched.reverse());
     } catch (e) {}
   }, [token, request, setNotes]);
 
@@ -108,17 +113,21 @@ export const StoreProvider = ({ children }: any) => {
   const store = {
     isReady,
     isLoading,
+    isModalOpen,
     token,
     userId,
     searchQuery,
     request,
     notes,
+    editNote,
     notification,
     fetchNotes,
     logIn,
     logOut,
     setNotification,
     setSearchQuery,
+    setIsModalOpen,
+    setEditNote,
   };
   return (
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>

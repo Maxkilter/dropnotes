@@ -1,0 +1,44 @@
+.new-note-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  min-height: 44px;
+}
+
+.new-note-box {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  width: 40%;
+  padding: 16px;
+}
+
+.note-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.note-body {
+  color: #3f51b5;
+}
+
+.note-body,
+.note-title {
+  &:empty:before {
+    content: attr(data-placeholder);
+    color: #80868b;
+  }
+  &:focus {
+    outline: none;
+  }
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 12px;
+  :first-child {
+    cursor: pointer;
+    color: #80868b;
+  }
+}

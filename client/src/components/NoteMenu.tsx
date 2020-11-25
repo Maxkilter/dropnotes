@@ -12,9 +12,9 @@ const ITEM_HEIGHT = 32;
 
 const useStyles = makeStyles({
   root: {
-    display: "flex",
-    justifyContent: "flex-end",
-    marginRight: 2,
+    // position: "relative",
+    // top: -75,
+    // left: 200,
   },
   copyIcon: {
     marginRight: 4,

@@ -1,0 +1,13 @@
+.edit-note-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 30vw;
+  height: 40vh;
+}
+
+.edit-note-box {
+  border-radius: 8px;
+  width: 98%;
+  padding: 16px;
+  overflow-y: scroll;
+}
