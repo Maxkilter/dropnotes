@@ -12,9 +12,8 @@ const ITEM_HEIGHT = 32;
 
 const useStyles = makeStyles({
   root: {
-    // position: "relative",
-    // top: -75,
-    // left: 200,
+    position: "relative",
+    left: 200,
   },
   copyIcon: {
     marginRight: 4,
@@ -58,14 +57,14 @@ const NoteMenu = ({ noteId }: Props) => {
     <div className={classes.root}>
       <IconButton
         aria-label="more"
-        aria-controls="long-menu"
+        aria-controls="menu"
         aria-haspopup="true"
         onClick={handleClick}
       >
         <MoreVertIcon />
       </IconButton>
       <Menu
-        id="long-menu"
+        id="menu"
         anchorEl={anchorEl}
         keepMounted
         open={open}

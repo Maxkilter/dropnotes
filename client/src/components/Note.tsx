@@ -10,6 +10,7 @@ import { StoreContext } from "../appStore";
 const useStyles = makeStyles({
   root: {
     width: 250,
+    margin: "0 16px 16px",
   },
   content: {
     height: 330,
@@ -36,19 +37,17 @@ const Note = (props: NoteProps) => {
   };
 
   return (
-    <div>
-      <Card className={classes.root} onClick={editNote}>
-        <CardActionArea>
-          <CardContent className={classes.content}>
-            {title && <Typography variant="body1">{title}</Typography>}
-            <Typography variant="body2" color="primary" paragraph>
-              {body}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
+    <Card className={classes.root}>
+      <CardActionArea>
+        <CardContent className={classes.content} onClick={editNote}>
+          {title && <Typography variant="body1">{title}</Typography>}
+          <Typography variant="body2" color="primary" paragraph>
+            {body}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
       <NoteMenu noteId={_id} />
-    </div>
+    </Card>
   );
 };
 
