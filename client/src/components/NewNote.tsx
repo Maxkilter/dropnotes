@@ -18,7 +18,7 @@ const NewNote = () => {
   const [isAddNoteExpanded, setIsAddNoteExpanded] = useState(false);
   const [note, setNote] = useState(defaultNoteState);
 
-  const isNoteFilled = note.body || note.title;
+  const isNoteFilled = note.body.trim() || note.title.trim();
 
   const ref = useRef(null);
 

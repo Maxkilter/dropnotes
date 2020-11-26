@@ -64,7 +64,8 @@ const EditNote = () => {
   // }, []);
 
   const shouldNoteUpdate =
-    note.title.trim() !== editNote.title || note.body.trim() !== editNote.body;
+    note.title.trim() !== editNote.title.trim() ||
+    note.body.trim() !== editNote.body.trim();
 
   const handleClose = useCallback(async () => {
     if (shouldNoteUpdate) {
