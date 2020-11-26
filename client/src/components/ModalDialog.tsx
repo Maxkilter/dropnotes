@@ -13,15 +13,21 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: "center",
     },
     paper: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.default,
       border: "2px solid #000",
       boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
+      padding: theme.spacing(2, 3, 2),
     },
   })
 );
 
-const ModalDialog = ({ children }: any) => {
+const ModalDialog = ({
+  children,
+  onOutsideClick,
+}: {
+  children: any;
+  onOutsideClick: () => {};
+}) => {
   const classes = useStyles();
   const { isModalOpen, setIsModalOpen } = useContext(StoreContext);
 
@@ -36,6 +42,7 @@ const ModalDialog = ({ children }: any) => {
       className={classes.modal}
       open={isModalOpen}
       onClose={handleClose}
+      onBackdropClick={onOutsideClick}
       disableBackdropClick
       disableEscapeKeyDown
       closeAfterTransition

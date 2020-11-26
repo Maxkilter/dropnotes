@@ -13,9 +13,8 @@ const useStyles = makeStyles({
     margin: "0 16px 16px",
   },
   content: {
-    height: 330,
+    height: 300,
     overflowY: "scroll",
-    marginBottom: 12,
   },
 });
 

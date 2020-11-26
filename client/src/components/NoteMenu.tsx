@@ -13,7 +13,7 @@ const ITEM_HEIGHT = 32;
 const useStyles = makeStyles({
   root: {
     position: "relative",
-    left: 200,
+    left: 218,
   },
   copyIcon: {
     marginRight: 4,
@@ -56,6 +56,7 @@ const NoteMenu = ({ noteId }: Props) => {
   return (
     <div className={classes.root}>
       <IconButton
+        size="small"
         aria-label="more"
         aria-controls="menu"
         aria-haspopup="true"

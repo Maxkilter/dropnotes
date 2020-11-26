@@ -9,7 +9,6 @@ import React, {
 import ModalDialog from "./ModalDialog";
 import { StoreContext } from "../appStore";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
-import { useOutsideClick } from "../hooks/useOutsideClick";
 
 import "../styles/EditNoteStyles.scss";
 
@@ -67,7 +66,7 @@ const EditNote = () => {
     note.title.trim() !== editNote.title.trim() ||
     note.body.trim() !== editNote.body.trim();
 
-  const handleClose = useCallback(async () => {
+  const handleModalClose = useCallback(async () => {
     if (shouldNoteUpdate) {
       try {
         const updatedNote = await request(
@@ -98,10 +97,8 @@ const EditNote = () => {
     shouldNoteUpdate,
   ]);
 
-  useOutsideClick(ref, () => () => handleClose());
-
   return (
-    <ModalDialog>
+    <ModalDialog onOutsideClick={handleModalClose}>
       <div className="edit-note-wrapper">
         <div className="edit-note-box" ref={ref}>
           <div
@@ -124,6 +121,7 @@ const EditNote = () => {
             contentEditable
             aria-multiline
             role="textbox"
+            data-placeholder="Note"
             onInput={(event: ChangeEvent<HTMLDivElement>) =>
               handleChange(event, note, setNote)
             }
@@ -134,7 +132,7 @@ const EditNote = () => {
         </div>
       </div>
       <div className="button-wrapper">
-        <div role="button" onClick={handleClose}>
+        <div role="button" onClick={handleModalClose}>
           {shouldNoteUpdate ? "Update" : "Close"}
         </div>
       </div>
