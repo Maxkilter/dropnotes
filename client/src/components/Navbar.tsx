@@ -188,7 +188,7 @@ const Navbar = (props: Props) => {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <div className={classes.logoBlock}>
             <img src="/logo.png" alt="logo" width="48" />
