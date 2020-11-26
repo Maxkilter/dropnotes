@@ -1,24 +1,48 @@
 import React, {
   ChangeEvent,
+  forwardRef,
+  ReactElement,
+  Ref,
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import ModalDialog from "./ModalDialog";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import Slide, { SlideProps } from "@material-ui/core/Slide";
+import { TransitionProps } from "@material-ui/core/transitions";
 import { StoreContext } from "../appStore";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
 
 import "../styles/EditNoteStyles.scss";
 
+const Transition = forwardRef(
+  (
+    props: TransitionProps & { children?: ReactElement<any, any> },
+    ref: Ref<unknown>
+  ) => {
+    const directions = ["up", "right", "down", "left"];
+    const setDirection = () => {
+      const random = Math.floor(Math.random() * directions.length);
+      return directions[random] as SlideProps["direction"];
+    };
+    return <Slide direction={setDirection()} ref={ref} {...props} />;
+  }
+);
+
 const EditNote = () => {
   const [note, setNote] = useState(defaultNoteState);
-  const ref = useRef(null);
 
-  const { editNote, setIsModalOpen, request, token, fetchNotes } = useContext(
-    StoreContext
-  );
+  const {
+    editNote,
+    isModalOpen,
+    setIsModalOpen,
+    request,
+    token,
+    fetchNotes,
+  } = useContext(StoreContext);
 
   useEffect(() => {
     setNote({
@@ -26,41 +50,6 @@ const EditNote = () => {
       body: editNote.body,
     });
   }, [editNote]);
-
-  const setSelection = () => {
-    const noteBody = document.getElementById("edit-note-body");
-    // if (noteBody?.hasChildNodes()) {
-    //   let s = window.getSelection();
-    //   let r = document.createRange();
-    //   let e = noteBody.childElementCount > 0 ? noteBody.lastChild : noteBody;
-    //   // @ts-ignore
-    //   r.setStart(e, 1);
-    //   // @ts-ignore
-    //   r.setEnd(e, 1);
-    //   // @ts-ignore
-    //   s.removeAllRanges();
-    //   // @ts-ignore
-    //   s.addRange(r);
-    // }
-    noteBody?.focus();
-  };
-
-  const noteBody = document.getElementById("edit-note-body");
-
-  // function SetCaretAtEnd(elem: any) {
-  //   const elemLen = elem.value.length;
-  //   if (elem.selectionStart || elem.selectionStart == "0") {
-  //     // Firefox/Chrome
-  //     elem.selectionStart = elemLen;
-  //     elem.selectionEnd = elemLen;
-  //     elem.focus();
-  //   }
-  // }
-  // SetCaretAtEnd(noteBody);
-
-  // useEffect(() => {
-  //   setSelection();
-  // }, []);
 
   const shouldNoteUpdate =
     note.title.trim() !== editNote.title.trim() ||
@@ -98,45 +87,55 @@ const EditNote = () => {
   ]);
 
   return (
-    <ModalDialog onOutsideClick={handleModalClose}>
+    <Dialog
+      open={isModalOpen}
+      TransitionComponent={Transition}
+      onClose={handleModalClose}
+    >
       <div className="edit-note-wrapper">
-        <div className="edit-note-box" ref={ref}>
-          <div
-            id="edit-note-title"
-            className="note-title"
-            contentEditable
-            role="textbox"
-            data-placeholder="Title"
-            onInput={(event: ChangeEvent<HTMLDivElement>) =>
-              handleChange(event, note, setNote)
-            }
-            onKeyDown={handleEnterPress}
-            suppressContentEditableWarning
-          >
-            {editNote.title}
-          </div>
-          <div
-            id="edit-note-body"
-            className="note-body"
-            contentEditable
-            aria-multiline
-            role="textbox"
-            data-placeholder="Note"
-            onInput={(event: ChangeEvent<HTMLDivElement>) =>
-              handleChange(event, note, setNote)
-            }
-            suppressContentEditableWarning
-          >
-            {editNote.body}
-          </div>
+        <div className="edit-note-box">
+          <DialogContent>
+            <div
+              id="edit-note-title"
+              className="note-title"
+              contentEditable
+              role="textbox"
+              data-placeholder="Title"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, note, setNote)
+              }
+              onKeyDown={handleEnterPress}
+              suppressContentEditableWarning
+            >
+              {editNote.title}
+            </div>
+            <div
+              id="edit-note-body"
+              className="note-body"
+              contentEditable
+              aria-multiline
+              role="textbox"
+              data-placeholder="Note"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, note, setNote)
+              }
+              suppressContentEditableWarning
+            >
+              {editNote.body}
+            </div>
+          </DialogContent>
         </div>
       </div>
-      <div className="button-wrapper">
-        <div role="button" onClick={handleModalClose}>
+      <DialogActions>
+        <div
+          className="edit-note-button"
+          role="button"
+          onClick={handleModalClose}
+        >
           {shouldNoteUpdate ? "Update" : "Close"}
         </div>
-      </div>
-    </ModalDialog>
+      </DialogActions>
+    </Dialog>
   );
 };
 
