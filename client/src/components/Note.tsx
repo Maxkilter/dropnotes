@@ -16,6 +16,9 @@ const useStyles = makeStyles({
     height: 300,
     overflowY: "scroll",
   },
+  noteBody: {
+    whiteSpace: "pre-wrap",
+  },
 });
 
 export interface NoteProps {
@@ -40,7 +43,12 @@ const Note = (props: NoteProps) => {
       <CardActionArea>
         <CardContent className={classes.content} onClick={editNote}>
           {title && <Typography variant="body1">{title}</Typography>}
-          <Typography variant="body2" color="primary" paragraph>
+          <Typography
+            className={classes.noteBody}
+            variant="body2"
+            color="primary"
+            paragraph
+          >
             {body}
           </Typography>
         </CardContent>

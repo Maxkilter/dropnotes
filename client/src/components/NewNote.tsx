@@ -15,7 +15,7 @@ import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
 import "../styles/NewNoteStyles.scss";
 
 const NewNote = () => {
-  const [isAddNoteExpanded, setIsAddNoteExpanded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [note, setNote] = useState(defaultNoteState);
 
   const isNoteFilled = note.body.trim() || note.title.trim();
@@ -24,7 +24,7 @@ const NewNote = () => {
 
   const { token, request, isLoading, fetchNotes } = useContext(StoreContext);
 
-  const addNoteExpand = () => setIsAddNoteExpanded(true);
+  const activateNoteAdding = () => setIsAdding(true);
 
   const addingFinished = useCallback(async () => {
     if (isNoteFilled) {
@@ -45,7 +45,7 @@ const NewNote = () => {
     }
 
     setNote(defaultNoteState);
-    setIsAddNoteExpanded(false);
+    setIsAdding(false);
   }, [token, request, fetchNotes, isNoteFilled, note.title, note.body]);
 
   useOutsideClick(ref, () => addingFinished());
@@ -53,7 +53,7 @@ const NewNote = () => {
   return (
     <div className="new-note-wrapper">
       <div className="new-note-box" ref={ref}>
-        {isAddNoteExpanded && !isLoading && (
+        {isAdding && !isLoading && (
           <div
             id="new-note-title"
             className="note-title"
@@ -79,10 +79,10 @@ const NewNote = () => {
             onInput={(event: ChangeEvent<HTMLDivElement>) =>
               handleChange(event, note, setNote)
             }
-            onClick={addNoteExpand}
+            onClick={activateNoteAdding}
           />
         )}
-        {isAddNoteExpanded && (
+        {isAdding && (
           <div className="button-wrapper">
             <div role="button" onClick={addingFinished}>
               {isNoteFilled ? "Add" : "Close"}

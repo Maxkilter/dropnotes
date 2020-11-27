@@ -25,5 +25,5 @@ export const handleChange = (
 ) =>
   setNote({
     ...note,
-    [e.target.id.includes("body") ? "body" : "title"]: e.target.textContent,
+    [e.target.id.includes("body") ? "body" : "title"]: e.target.innerText,
   });
