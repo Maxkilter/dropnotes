@@ -50,7 +50,7 @@ router.put("/:id", authMid, async (req, res) => {
 
 router.delete("/:id", authMid, async (req, res) => {
   try {
-    await Note.findByIdAndRemove(req.params.id);
+    await Note.findByIdAndDelete(req.params.id);
     res.json(200);
   } catch (e) {
     res.status(500).json({ message: "Something went wrong, try again :-(" });

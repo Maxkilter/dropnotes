@@ -1,13 +1,19 @@
-import React, { useCallback, memo, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import NewNote from "../components/NewNote";
 import Note, { NoteProps } from "../components/Note";
 import EditNote from "../components/EditNote";
 import { StoreContext } from "../appStore";
+import { useNoteAction } from "../hooks/useNoteAction";
 
 import "../styles/NotesPageStyles.scss";
 
 const NotesPage = () => {
   const { notes } = useContext(StoreContext);
+  const { fetchNotes } = useNoteAction();
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
   const renderNotes = useCallback((notes: NoteProps[]) => {
     return notes.map((note: NoteProps) => (
@@ -24,4 +30,4 @@ const NotesPage = () => {
   );
 };
 
-export default memo(NotesPage);
+export default NotesPage;

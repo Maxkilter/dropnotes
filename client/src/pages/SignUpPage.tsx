@@ -1,5 +1,11 @@
 //@ts-nocheck
-import React, { ChangeEvent, useState, FormEvent, useContext } from "react";
+import React, {
+  ChangeEvent,
+  useState,
+  FormEvent,
+  useContext,
+  useEffect,
+} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -10,8 +16,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
-// import { Color } from "@material-ui/lab";
 import { StoreContext } from "../appStore";
+import { useRequest } from "../hooks/useRequest";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
 
 const SignUpPage = () => {
   const classes = useStyles();
-  const { logIn, setNotification, request, isLoading } = useContext(
-    StoreContext
-  );
+  const { logIn, setNotification } = useContext(StoreContext);
+
+  const { request, isLoading, error, clearError } = useRequest();
 
   const [form, setForm] = useState({
     firstName: null,
@@ -45,6 +51,17 @@ const SignUpPage = () => {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (error) {
+      setNotification({
+        isOpen: true,
+        message: error,
+        severity: "error",
+      });
+      clearError();
+    }
+  }, [error, clearError, setNotification]);
 
   const changeHandler = (event: ChangeEvent<HTMLFormElement>) => {
     setForm({
@@ -64,7 +81,7 @@ const SignUpPage = () => {
       setNotification({
         isOpen: true,
         message: signUpData.message,
-        // severity: Color["success"],
+        severity: "success",
       });
 
       const signIndData = await request("/api/auth/login", "POST", {

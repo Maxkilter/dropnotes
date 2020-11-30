@@ -15,6 +15,7 @@ import Slide, { SlideProps } from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { StoreContext } from "../appStore";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
+import { useNoteAction } from "../hooks/useNoteAction";
 
 import "../styles/EditNoteStyles.scss";
 
@@ -34,15 +35,9 @@ const Transition = forwardRef(
 
 const EditNote = () => {
   const [note, setNote] = useState(defaultNoteState);
+  const { updateNote, fetchNotes } = useNoteAction();
 
-  const {
-    editNote,
-    isModalOpen,
-    setIsModalOpen,
-    request,
-    token,
-    fetchNotes,
-  } = useContext(StoreContext);
+  const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
 
   useEffect(() => {
     setNote({
@@ -51,39 +46,28 @@ const EditNote = () => {
     });
   }, [editNote]);
 
-  const shouldNoteUpdate =
+  const shouldUpdateNote =
     note.title.trim() !== editNote.title.trim() ||
     note.body.trim() !== editNote.body.trim();
 
-  const handleModalClose = useCallback(async () => {
-    if (shouldNoteUpdate) {
-      try {
-        const updatedNote = await request(
-          `/api/notes/${editNote._id}`,
-          "PUT",
-          {
-            title: note.title,
-            body: note.body,
-          },
-          { Authorization: `Bearer ${token}` }
-        );
-        // @ts-ignore
-        if (updatedNote) {
-          fetchNotes();
-        }
-      } catch (e) {}
+  const handleModalClose = useCallback(() => {
+    const { title, body } = note;
+    if (shouldUpdateNote) {
+      const updatedNote = updateNote(editNote._id, title, body);
+      // @ts-ignore
+      if (updatedNote) {
+        fetchNotes();
+      }
     }
 
     setIsModalOpen(false);
   }, [
-    token,
-    request,
     fetchNotes,
-    note.title,
-    note.body,
+    note,
     editNote._id,
     setIsModalOpen,
-    shouldNoteUpdate,
+    shouldUpdateNote,
+    updateNote,
   ]);
 
   return (
@@ -132,7 +116,7 @@ const EditNote = () => {
           role="button"
           onClick={handleModalClose}
         >
-          {shouldNoteUpdate ? "Update" : "Close"}
+          {shouldUpdateNote ? "Update" : "Close"}
         </div>
       </DialogActions>
     </Dialog>

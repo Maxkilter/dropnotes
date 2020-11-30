@@ -1,15 +1,7 @@
-//@ts-nocheck
-import React, {
-  useState,
-  useRef,
-  useContext,
-  useCallback,
-  memo,
-  ChangeEvent,
-} from "react";
+import React, { useState, useRef, useCallback, memo, ChangeEvent } from "react";
 import Loader from "./Loader";
 import { useOutsideClick } from "../hooks/useOutsideClick";
-import { StoreContext } from "../appStore";
+import { useNoteAction } from "../hooks/useNoteAction";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
 
 import "../styles/NewNoteStyles.scss";
@@ -18,35 +10,26 @@ const NewNote = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [note, setNote] = useState(defaultNoteState);
 
-  const isNoteFilled = note.body.trim() || note.title.trim();
+  const shouldCreateNote = note.body.trim() || note.title.trim();
 
   const ref = useRef(null);
 
-  const { token, request, isLoading, fetchNotes } = useContext(StoreContext);
+  const { createNote, fetchNotes, isLoading } = useNoteAction();
 
   const activateNoteAdding = () => setIsAdding(true);
 
-  const addingFinished = useCallback(async () => {
-    if (isNoteFilled) {
-      try {
-        const newNote = await request(
-          "/api/notes/create",
-          "POST",
-          { title: note.title, body: note.body },
-          {
-            Authorization: `Bearer ${token}`,
-          }
-        );
-
-        if (newNote) {
-          fetchNotes();
-        }
-      } catch (e) {}
+  const addingFinished = useCallback(() => {
+    const { title, body } = note;
+    if (shouldCreateNote) {
+      const newNote = createNote(title, body);
+      if (newNote) {
+        fetchNotes();
+      }
     }
 
     setNote(defaultNoteState);
     setIsAdding(false);
-  }, [token, request, fetchNotes, isNoteFilled, note.title, note.body]);
+  }, [fetchNotes, shouldCreateNote, note, createNote]);
 
   useOutsideClick(ref, () => addingFinished());
 
@@ -85,7 +68,7 @@ const NewNote = () => {
         {isAdding && (
           <div className="button-wrapper">
             <div role="button" onClick={addingFinished}>
-              {isNoteFilled ? "Add" : "Close"}
+              {shouldCreateNote ? "Add" : "Close"}
             </div>
           </div>
         )}

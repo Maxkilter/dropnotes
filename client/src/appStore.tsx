@@ -1,14 +1,13 @@
 //@ts-nocheck
 import React, {
-  useState,
-  useCallback,
-  useEffect,
   createContext,
   Dispatch,
   SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
 } from "react";
 import { Color } from "@material-ui/lab";
-import { useRequest } from "./hooks/useRequest";
 
 const storageName = "userData";
 
@@ -20,34 +19,28 @@ const defaultNotificationState = {
 
 export const StoreContext = createContext({
   isReady: false,
-  isLoading: false,
   isModalOpen: false,
   searchQuery: "",
   notes: [],
   editNote: { _id: "", title: "", body: "" },
-  token: null,
+  token: "",
   userId: null,
   notification: defaultNotificationState,
   logIn: (jwtToken: string, id: string) => {},
   logOut: () => {},
-  request: (link, method, body, headers) => {},
   setSearchQuery: (e: string): Dispatch<SetStateAction<string>> => () => {},
   setEditNote: ({ _id, title, body }) => {},
   setIsModalOpen: (value: boolean) => {},
-  setNotification: ({
-    isOpen,
-    message,
-    severity,
-  }: {
+  setNotes: (value: []) => {},
+  setNotification: (value: {
     isOpen: boolean;
     message: string;
-    severity: any;
+    severity: Color;
   }) => {},
-  fetchNotes: () => {},
 });
 
 export const StoreProvider = ({ children }: any) => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState("");
   const [userId, setUserId] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,34 +48,6 @@ export const StoreProvider = ({ children }: any) => {
   const [editNote, setEditNote] = useState({ _id: "", title: "", body: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState(defaultNotificationState);
-
-  const { request, isLoading, clearError, error } = useRequest();
-
-  const fetchNotes = useCallback(async () => {
-    try {
-      const fetched = await request("/api/notes", "GET", null, {
-        Authorization: `Bearer ${token}`,
-      });
-      setNotes(fetched.reverse());
-    } catch (e) {}
-  }, [token, request, setNotes]);
-
-  useEffect(() => {
-    if (token) {
-      fetchNotes();
-    }
-  }, [fetchNotes, token]);
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError]);
 
   const logIn = useCallback((jwtToken, id) => {
     setToken(jwtToken);
@@ -112,22 +77,20 @@ export const StoreProvider = ({ children }: any) => {
 
   const store = {
     isReady,
-    isLoading,
     isModalOpen,
     token,
     userId,
     searchQuery,
-    request,
     notes,
     editNote,
     notification,
-    fetchNotes,
     logIn,
     logOut,
     setNotification,
     setSearchQuery,
     setIsModalOpen,
     setEditNote,
+    setNotes,
   };
   return (
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
