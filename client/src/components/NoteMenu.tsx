@@ -8,6 +8,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { makeStyles } from "@material-ui/core/styles";
 import { CircularProgress } from "@material-ui/core";
 import { useNoteAction } from "../hooks/useNoteAction";
+import { NoteProps } from "./Note";
 
 const ITEM_HEIGHT = 32;
 
@@ -26,16 +27,13 @@ const useStyles = makeStyles({
   },
 });
 
-interface Props {
-  noteId: string;
-}
-
-const NoteMenu = ({ noteId }: Props) => {
+const NoteMenu = ({ note }: { note: NoteProps }) => {
+  const { _id, title, body } = note;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const classes = useStyles();
 
-  const { fetchNotes, deleteNote, isLoading } = useNoteAction();
+  const { fetchNotes, deleteNote, createNote, isLoading } = useNoteAction();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -47,11 +45,19 @@ const NoteMenu = ({ noteId }: Props) => {
 
   const removeNote = useCallback(async () => {
     handleClose();
-    const data = await deleteNote(noteId);
-    if (data) {
+    const deleted = await deleteNote(_id);
+    if (deleted) {
       await fetchNotes();
     }
-  }, [noteId, fetchNotes, deleteNote]);
+  }, [_id, fetchNotes, deleteNote]);
+
+  const copyNote = useCallback(async () => {
+    handleClose();
+    const copiedNote = await createNote(title, body);
+    if (copiedNote) {
+      await fetchNotes();
+    }
+  }, [title, body, fetchNotes, createNote]);
 
   return (
     <div className={classes.root}>
@@ -88,7 +94,7 @@ const NoteMenu = ({ noteId }: Props) => {
           <DeleteForeverIcon color="primary" />
           Delete note
         </MenuItem>
-        <MenuItem key="copy" onClick={handleClose}>
+        <MenuItem key="copy" onClick={copyNote}>
           <FileCopyIcon
             className={classes.copyIcon}
             fontSize="small"

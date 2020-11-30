@@ -50,13 +50,13 @@ const EditNote = () => {
     note.title.trim() !== editNote.title.trim() ||
     note.body.trim() !== editNote.body.trim();
 
-  const handleModalClose = useCallback(() => {
+  const handleModalClose = useCallback(async () => {
     const { title, body } = note;
     if (shouldUpdateNote) {
-      const updatedNote = updateNote(editNote._id, title, body);
+      const updatedNote = await updateNote(editNote._id, title, body);
       // @ts-ignore
       if (updatedNote) {
-        fetchNotes();
+        await fetchNotes();
       }
     }
 

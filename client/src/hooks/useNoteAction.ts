@@ -26,7 +26,7 @@ export const useNoteAction = () => {
     } catch (e) {}
   };
 
-  const createNote = async (title: string, body: string) => {
+  const createNote = async (title: string | undefined, body: string) => {
     try {
       return await request(
         "/api/notes/create",

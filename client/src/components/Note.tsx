@@ -27,8 +27,8 @@ export interface NoteProps {
   body: string;
 }
 
-const Note = (props: NoteProps) => {
-  const { title, body, _id } = props;
+const Note = ({ note }: { note: NoteProps }) => {
+  const { title, body, _id } = note;
   const classes = useStyles();
 
   const { setIsModalOpen, setEditNote } = useContext(StoreContext);
@@ -53,7 +53,7 @@ const Note = (props: NoteProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <NoteMenu noteId={_id} />
+      <NoteMenu note={note} />
     </Card>
   );
 };

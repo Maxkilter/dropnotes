@@ -18,12 +18,12 @@ const NewNote = () => {
 
   const activateNoteAdding = () => setIsAdding(true);
 
-  const addingFinished = useCallback(() => {
+  const addingFinished = useCallback(async () => {
     const { title, body } = note;
     if (shouldCreateNote) {
-      const newNote = createNote(title, body);
+      const newNote = await createNote(title, body);
       if (newNote) {
-        fetchNotes();
+        await fetchNotes();
       }
     }
 

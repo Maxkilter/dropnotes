@@ -16,9 +16,7 @@ const NotesPage = () => {
   }, []);
 
   const renderNotes = useCallback((notes: NoteProps[]) => {
-    return notes.map((note: NoteProps) => (
-      <Note key={note._id} _id={note._id} title={note.title} body={note.body} />
-    ));
+    return notes.map((note: NoteProps) => <Note key={note._id} note={note} />);
   }, []);
 
   return (
