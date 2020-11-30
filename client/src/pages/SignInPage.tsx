@@ -1,5 +1,11 @@
 //@ts-nocheck
-import React, { ChangeEvent, FormEvent, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Loader from "../components/Loader";
 import { StoreContext } from "../appStore";
+import { useRequest } from "../hooks/useRequest";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,12 +42,24 @@ const useStyles = makeStyles((theme) => ({
 
 const SignInPage = () => {
   const classes = useStyles();
-  const { logIn, isLoading, request } = useContext(StoreContext);
+  const { logIn, setNotification } = useContext(StoreContext);
+  const { isLoading, request, error, clearError } = useRequest();
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (error) {
+      setNotification({
+        isOpen: true,
+        message: error,
+        severity: "error",
+      });
+      clearError();
+    }
+  }, [error, clearError, setNotification]);
 
   const signInHandler = async (event: FormEvent) => {
     event.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -6,7 +6,8 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { makeStyles } from "@material-ui/core/styles";
-import { StoreContext } from "../appStore";
+import { CircularProgress } from "@material-ui/core";
+import { useNoteAction } from "../hooks/useNoteAction";
 
 const ITEM_HEIGHT = 32;
 
@@ -19,6 +20,10 @@ const useStyles = makeStyles({
     marginRight: 4,
     paddingLeft: 4,
   },
+  loading: {
+    position: "absolute",
+    left: 0,
+  },
 });
 
 interface Props {
@@ -30,7 +35,7 @@ const NoteMenu = ({ noteId }: Props) => {
   const open = Boolean(anchorEl);
   const classes = useStyles();
 
-  const { token, fetchNotes, request } = useContext(StoreContext);
+  const { fetchNotes, deleteNote, isLoading } = useNoteAction();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -40,18 +45,13 @@ const NoteMenu = ({ noteId }: Props) => {
     setAnchorEl(null);
   };
 
-  const deleteNote = useCallback(async () => {
+  const removeNote = useCallback(async () => {
     handleClose();
-    try {
-      const fetched = await request(`api/notes/${noteId}`, "DELETE", null, {
-        Authorization: `Bearer ${token}`,
-      });
-      // @ts-ignore
-      if (fetched) {
-        fetchNotes();
-      }
-    } catch (e) {}
-  }, [noteId, request, token, fetchNotes]);
+    const data = await deleteNote(noteId);
+    if (data) {
+      await fetchNotes();
+    }
+  }, [noteId, fetchNotes, deleteNote]);
 
   return (
     <div className={classes.root}>
@@ -64,6 +64,13 @@ const NoteMenu = ({ noteId }: Props) => {
       >
         <MoreVertIcon />
       </IconButton>
+      {isLoading && (
+        <CircularProgress
+          size={28}
+          className={classes.loading}
+          color="secondary"
+        />
+      )}
       <Menu
         id="menu"
         anchorEl={anchorEl}
@@ -77,7 +84,7 @@ const NoteMenu = ({ noteId }: Props) => {
           },
         }}
       >
-        <MenuItem key="delete" onClick={deleteNote}>
+        <MenuItem key="delete" onClick={removeNote}>
           <DeleteForeverIcon color="primary" />
           Delete note
         </MenuItem>
