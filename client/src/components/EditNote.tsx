@@ -13,6 +13,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Slide, { SlideProps } from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
+import Loader, { LoaderTypes } from "./Loader";
 import { StoreContext } from "../appStore";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
 import { useNoteAction } from "../hooks/useNoteAction";
@@ -35,7 +36,7 @@ const Transition = forwardRef(
 
 const EditNote = () => {
   const [note, setNote] = useState(defaultNoteState);
-  const { updateNote, fetchNotes } = useNoteAction();
+  const { updateNote, fetchNotes, isLoading } = useNoteAction();
 
   const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
 
@@ -50,17 +51,17 @@ const EditNote = () => {
     note.title.trim() !== editNote.title.trim() ||
     note.body.trim() !== editNote.body.trim();
 
-  const handleModalClose = useCallback(() => {
+  const handleModalClose = useCallback(async () => {
     const { title, body } = note;
+    setIsModalOpen(false);
+
     if (shouldUpdateNote) {
-      const updatedNote = updateNote(editNote._id, title, body);
+      const updatedNote = await updateNote(editNote._id, title, body);
       // @ts-ignore
       if (updatedNote) {
-        fetchNotes();
+        await fetchNotes();
       }
     }
-
-    setIsModalOpen(false);
   }, [
     fetchNotes,
     note,
@@ -71,55 +72,58 @@ const EditNote = () => {
   ]);
 
   return (
-    <Dialog
-      open={isModalOpen}
-      TransitionComponent={Transition}
-      onClose={handleModalClose}
-    >
-      <div className="edit-note-wrapper">
-        <div className="edit-note-box">
-          <DialogContent>
-            <div
-              id="edit-note-title"
-              className="note-title"
-              contentEditable
-              role="textbox"
-              data-placeholder="Title"
-              onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                handleChange(event, note, setNote)
-              }
-              onKeyDown={handleEnterPress}
-              suppressContentEditableWarning
-            >
-              {editNote.title}
-            </div>
-            <div
-              id="edit-note-body"
-              className="note-body"
-              contentEditable
-              aria-multiline
-              role="textbox"
-              data-placeholder="Note"
-              onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                handleChange(event, note, setNote)
-              }
-              suppressContentEditableWarning
-            >
-              {editNote.body}
-            </div>
-          </DialogContent>
+    <>
+      <Dialog
+        open={isModalOpen}
+        TransitionComponent={Transition}
+        onClose={handleModalClose}
+      >
+        <div className="edit-note-wrapper">
+          <div className="edit-note-box">
+            <DialogContent>
+              <div
+                id="edit-note-title"
+                className="note-title"
+                contentEditable
+                role="textbox"
+                data-placeholder="Title"
+                onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                  handleChange(event, note, setNote)
+                }
+                onKeyDown={handleEnterPress}
+                suppressContentEditableWarning
+              >
+                {editNote.title}
+              </div>
+              <div
+                id="edit-note-body"
+                className="note-body"
+                contentEditable
+                aria-multiline
+                role="textbox"
+                data-placeholder="Note"
+                onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                  handleChange(event, note, setNote)
+                }
+                suppressContentEditableWarning
+              >
+                {editNote.body}
+              </div>
+            </DialogContent>
+          </div>
         </div>
-      </div>
-      <DialogActions>
-        <div
-          className="edit-note-button"
-          role="button"
-          onClick={handleModalClose}
-        >
-          {shouldUpdateNote ? "Update" : "Close"}
-        </div>
-      </DialogActions>
-    </Dialog>
+        <DialogActions>
+          <div
+            className="edit-note-button"
+            role="button"
+            onClick={handleModalClose}
+          >
+            {shouldUpdateNote ? "Update" : "Close"}
+          </div>
+        </DialogActions>
+      </Dialog>
+      {isLoading && <Loader type={LoaderTypes.dots} />}
+    </>
   );
 };
 

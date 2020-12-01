@@ -2,7 +2,7 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Loader from "./components/Loader";
+import Loader, { LoaderTypes } from "./components/Loader";
 import navigation from "./routes";
 import Notification from "./components/Notification";
 import { StoreContext } from "./appStore";
@@ -18,7 +18,7 @@ const App = () => {
   const routes = navigation(isAuthenticated);
 
   if (!isReady) {
-    return <Loader />;
+    return <Loader type={LoaderTypes.darken} />;
   }
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, memo, ChangeEvent } from "react";
-import Loader from "./Loader";
+import Loader, { LoaderTypes } from "./Loader";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { useNoteAction } from "../hooks/useNoteAction";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
@@ -18,17 +18,17 @@ const NewNote = () => {
 
   const activateNoteAdding = () => setIsAdding(true);
 
-  const addingFinished = useCallback(() => {
+  const addingFinished = useCallback(async () => {
     const { title, body } = note;
-    if (shouldCreateNote) {
-      const newNote = createNote(title, body);
-      if (newNote) {
-        fetchNotes();
-      }
-    }
-
     setNote(defaultNoteState);
     setIsAdding(false);
+
+    if (shouldCreateNote) {
+      const newNote = await createNote(title, body);
+      if (newNote) {
+        await fetchNotes();
+      }
+    }
   }, [fetchNotes, shouldCreateNote, note, createNote]);
 
   useOutsideClick(ref, () => addingFinished());
@@ -50,7 +50,7 @@ const NewNote = () => {
           />
         )}
         {isLoading ? (
-          <Loader />
+          <Loader type={LoaderTypes.linear} />
         ) : (
           <div
             id="new-note-body"
