@@ -1,4 +1,11 @@
-import React, { useState, useRef, useCallback, memo, ChangeEvent } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  memo,
+  ChangeEvent,
+  useEffect,
+} from "react";
 import Loader, { LoaderTypes } from "./Loader";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { useNoteAction } from "../hooks/useNoteAction";
@@ -15,6 +22,10 @@ const NewNote = () => {
   const ref = useRef(null);
 
   const { createNote, fetchNotes, isLoading } = useNoteAction();
+
+  useEffect(() => {
+    document.getElementById("new-note-body")?.focus();
+  }, []);
 
   const activateNoteAdding = () => setIsAdding(true);
 
@@ -63,6 +74,7 @@ const NewNote = () => {
               handleChange(event, note, setNote)
             }
             onClick={activateNoteAdding}
+            onKeyPress={activateNoteAdding}
           />
         )}
         {isAdding && (
