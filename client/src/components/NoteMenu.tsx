@@ -5,8 +5,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
+import Loader, { LoaderTypes } from "./Loader";
 import { makeStyles } from "@material-ui/core/styles";
-import { CircularProgress } from "@material-ui/core";
 import { useNoteAction } from "../hooks/useNoteAction";
 import { NoteProps } from "./Note";
 
@@ -20,10 +20,6 @@ const useStyles = makeStyles({
   copyIcon: {
     marginRight: 4,
     paddingLeft: 4,
-  },
-  loading: {
-    position: "absolute",
-    left: 0,
   },
 });
 
@@ -70,13 +66,7 @@ const NoteMenu = ({ note }: { note: NoteProps }) => {
       >
         <MoreVertIcon />
       </IconButton>
-      {isLoading && (
-        <CircularProgress
-          size={28}
-          className={classes.loading}
-          color="secondary"
-        />
-      )}
+      {isLoading && <Loader type={LoaderTypes.circular} />}
       <Menu
         id="menu"
         anchorEl={anchorEl}

@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { LinearProgress } from "@material-ui/core";
+
+export enum LoaderTypes {
+  darken = "darken",
+  circular = "circular",
+  linear = "linear",
+  dots = "dots",
+}
+
+interface Props {
+  type: LoaderTypes;
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -17,30 +28,68 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       margin: "7px 0",
     },
+    dots: {
+      position: "fixed",
+      top: 120,
+      left: 34,
+      color: "#757575",
+      fontSize: 14,
+    },
+    circular: {
+      position: "absolute",
+      left: 1,
+    },
   })
 );
 
-interface Props {
-  darken?: boolean;
-}
-
-const Loader = (props: Props) => {
-  const { darken } = props;
+const DotsProgress = () => {
+  const [dots, setDots] = useState(1);
   const classes = useStyles();
 
-  return (
-    <>
-      {darken ? (
-        <Backdrop className={classes.backdrop} open>
-          <CircularProgress color="inherit" size={70} thickness={2} />
-        </Backdrop>
-      ) : (
-        <div className={classes.linear}>
-          <LinearProgress color="primary" />
-        </div>
-      )}
-    </>
-  );
+  useEffect(() => {
+    const interval = setInterval(() => {
+      return setDots(dots === 3 ? 0 : dots + 1);
+    }, 300);
+    return function cleanup() {
+      clearInterval(interval);
+    };
+  }, [dots, setDots]);
+
+  const text = dots === 0 ? "" : ".".repeat(dots);
+  return <span className={classes.dots}>{`Loading${text}`}</span>;
+};
+
+const Loader = (props: Props) => {
+  const { type } = props;
+  const classes = useStyles();
+
+  if (type === LoaderTypes.darken) {
+    return (
+      <Backdrop className={classes.backdrop} open>
+        <CircularProgress color="inherit" size={70} thickness={2} />
+      </Backdrop>
+    );
+  }
+
+  if (type === LoaderTypes.linear) {
+    return (
+      <div className={classes.linear}>
+        <LinearProgress color="primary" />
+      </div>
+    );
+  }
+
+  if (type === LoaderTypes.circular) {
+    return (
+      <CircularProgress
+        size={28}
+        className={classes.circular}
+        color="primary"
+      />
+    );
+  }
+
+  return <DotsProgress />;
 };
 
 export default Loader;
