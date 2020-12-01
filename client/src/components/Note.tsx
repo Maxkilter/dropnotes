@@ -19,12 +19,23 @@ const useStyles = makeStyles({
   noteBody: {
     whiteSpace: "pre-wrap",
   },
+  noteBottom: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: 10,
+  },
+  dateWrapper: {
+    flex: 2,
+    textAlign: "center",
+    color: "#757575",
+  },
 });
 
 export interface NoteProps {
   _id: string;
   title?: string;
   body: string;
+  date: string;
 }
 
 const Note = ({ note }: { note: NoteProps }) => {
@@ -53,7 +64,15 @@ const Note = ({ note }: { note: NoteProps }) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <NoteMenu note={note} />
+      <Typography className={classes.noteBottom}>
+        <div className={classes.dateWrapper}>
+          <span>Created: </span>
+          <span>{new Date(note.date).toLocaleString()}</span>
+        </div>
+        <div>
+          <NoteMenu note={note} />
+        </div>
+      </Typography>
     </Card>
   );
 };

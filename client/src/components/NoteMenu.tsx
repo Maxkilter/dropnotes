@@ -15,7 +15,6 @@ const ITEM_HEIGHT = 32;
 const useStyles = makeStyles({
   root: {
     position: "relative",
-    left: 218,
   },
   copyIcon: {
     marginRight: 4,
