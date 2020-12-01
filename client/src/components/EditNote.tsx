@@ -51,9 +51,11 @@ const EditNote = () => {
     note.title.trim() !== editNote.title.trim() ||
     note.body.trim() !== editNote.body.trim();
 
-  const handleModalClose = useCallback(async () => {
+  const closeModal = useCallback(() => setIsModalOpen(false), [setIsModalOpen]);
+
+  const rewriteNote = useCallback(async () => {
     const { title, body } = note;
-    setIsModalOpen(false);
+    closeModal();
 
     if (shouldUpdateNote) {
       const updatedNote = await updateNote(editNote._id, title, body);
@@ -66,7 +68,7 @@ const EditNote = () => {
     fetchNotes,
     note,
     editNote._id,
-    setIsModalOpen,
+    closeModal,
     shouldUpdateNote,
     updateNote,
   ]);
@@ -76,7 +78,7 @@ const EditNote = () => {
       <Dialog
         open={isModalOpen}
         TransitionComponent={Transition}
-        onClose={handleModalClose}
+        onClose={rewriteNote}
       >
         <div className="edit-note-wrapper">
           <div className="edit-note-box">
@@ -113,13 +115,18 @@ const EditNote = () => {
           </div>
         </div>
         <DialogActions>
-          <div
-            className="edit-note-button"
-            role="button"
-            onClick={handleModalClose}
-          >
-            {shouldUpdateNote ? "Update" : "Close"}
+          <div className="edit-note-button" role="button" onClick={closeModal}>
+            Close
           </div>
+          {shouldUpdateNote && (
+            <div
+              className="edit-note-button"
+              role="button"
+              onClick={rewriteNote}
+            >
+              Update
+            </div>
+          )}
         </DialogActions>
       </Dialog>
       {isLoading && <Loader type={LoaderTypes.dots} />}

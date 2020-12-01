@@ -14,7 +14,7 @@ import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
 import "../styles/NewNoteStyles.scss";
 
 const NewNote = () => {
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAddingFormExpanded, setIsAddingFormExpanded] = useState(false);
   const [note, setNote] = useState(defaultNoteState);
 
   const shouldCreateNote = note.body.trim() || note.title.trim();
@@ -23,16 +23,21 @@ const NewNote = () => {
 
   const { createNote, fetchNotes, isLoading } = useNoteAction();
 
+  const newNoteBody = document.getElementById("new-note-body");
+
   useEffect(() => {
-    document.getElementById("new-note-body")?.focus();
-  }, []);
+    newNoteBody?.focus();
+  }, [newNoteBody]);
 
-  const activateNoteAdding = () => setIsAdding(true);
+  const expandAddingForm = () => {
+    newNoteBody?.scrollIntoView(false);
+    setIsAddingFormExpanded(true);
+  };
 
-  const addingFinished = useCallback(async () => {
+  const addNewNote = useCallback(async () => {
     const { title, body } = note;
     setNote(defaultNoteState);
-    setIsAdding(false);
+    setIsAddingFormExpanded(false);
 
     if (shouldCreateNote) {
       const newNote = await createNote(title, body);
@@ -42,12 +47,12 @@ const NewNote = () => {
     }
   }, [fetchNotes, shouldCreateNote, note, createNote]);
 
-  useOutsideClick(ref, () => addingFinished());
+  useOutsideClick(ref, () => addNewNote());
 
   return (
     <div className="new-note-wrapper">
       <div className="new-note-box" ref={ref}>
-        {isAdding && !isLoading && (
+        {isAddingFormExpanded && !isLoading && (
           <div
             id="new-note-title"
             className="note-title"
@@ -73,13 +78,13 @@ const NewNote = () => {
             onInput={(event: ChangeEvent<HTMLDivElement>) =>
               handleChange(event, note, setNote)
             }
-            onClick={activateNoteAdding}
-            onKeyPress={activateNoteAdding}
+            onClick={expandAddingForm}
+            onKeyPress={expandAddingForm}
           />
         )}
-        {isAdding && (
+        {isAddingFormExpanded && (
           <div className="button-wrapper">
-            <div role="button" onClick={addingFinished}>
+            <div role="button" onClick={addNewNote}>
               {shouldCreateNote ? "Add" : "Close"}
             </div>
           </div>

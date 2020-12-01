@@ -64,7 +64,7 @@ const Note = ({ note }: { note: NoteProps }) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <Typography className={classes.noteBottom}>
+      <div className={classes.noteBottom}>
         <div className={classes.dateWrapper}>
           <span>Created: </span>
           <span>{new Date(note.date).toLocaleString()}</span>
@@ -72,7 +72,7 @@ const Note = ({ note }: { note: NoteProps }) => {
         <div>
           <NoteMenu note={note} />
         </div>
-      </Typography>
+      </div>
     </Card>
   );
 };
