@@ -1,15 +1,26 @@
-import { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  KeyboardEvent,
+  RefObject,
+  SetStateAction,
+} from "react";
 
 export const defaultNoteState = {
   title: "",
   body: "",
 };
 
-export const handleEnterPress = (e: KeyboardEvent<HTMLDivElement>) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    document.getElementById("new-note-body")?.focus();
-    document.getElementById("edit-note-body")?.focus();
+export const setFocus = (element: RefObject<HTMLDivElement>) =>
+  element?.current?.focus();
+
+export const handleEnterPress = (
+  event: KeyboardEvent<HTMLDivElement>,
+  element: RefObject<HTMLDivElement>
+) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    setFocus(element);
   }
 };
 

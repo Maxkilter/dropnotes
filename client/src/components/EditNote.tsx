@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import Dialog from "@material-ui/core/Dialog";
@@ -16,7 +17,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import Loader, { LoaderTypes } from "./Loader";
 import { StoreContext } from "../appStore";
 import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
-import { useNoteAction } from "../hooks/useNoteAction";
+import { useNoteAction } from "../hooks";
 
 import "../styles/EditNoteStyles.scss";
 
@@ -37,7 +38,7 @@ const Transition = forwardRef(
 const EditNote = () => {
   const [note, setNote] = useState(defaultNoteState);
   const { updateNote, fetchNotes, isLoading } = useNoteAction();
-
+  const editNoteBodyRef = useRef<HTMLDivElement>(null);
   const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
 
   useEffect(() => {
@@ -92,12 +93,13 @@ const EditNote = () => {
                 onInput={(event: ChangeEvent<HTMLDivElement>) =>
                   handleChange(event, note, setNote)
                 }
-                onKeyDown={handleEnterPress}
+                onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
                 suppressContentEditableWarning
               >
                 {editNote.title}
               </div>
               <div
+                ref={editNoteBodyRef}
                 id="edit-note-body"
                 className="note-body"
                 contentEditable

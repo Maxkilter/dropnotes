@@ -18,7 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Loader, { LoaderTypes } from "../components/Loader";
 import { StoreContext } from "../appStore";
-import { useRequest } from "../hooks/useRequest";
+import { useRequest } from "../hooks";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

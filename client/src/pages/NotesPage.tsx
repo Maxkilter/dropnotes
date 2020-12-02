@@ -4,7 +4,7 @@ import Note, { NoteProps } from "../components/Note";
 import EditNote from "../components/EditNote";
 import Loader, { LoaderTypes } from "../components/Loader";
 import { StoreContext } from "../appStore";
-import { useNoteAction } from "../hooks/useNoteAction";
+import { useNoteAction } from "../hooks";
 
 import "../styles/NotesPageStyles.scss";
 

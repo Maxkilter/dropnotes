@@ -7,9 +7,13 @@ import React, {
   useEffect,
 } from "react";
 import Loader, { LoaderTypes } from "./Loader";
-import { useOutsideClick } from "../hooks/useOutsideClick";
-import { useNoteAction } from "../hooks/useNoteAction";
-import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
+import { useNoteAction, useOutsideClick } from "../hooks";
+import {
+  defaultNoteState,
+  handleChange,
+  handleEnterPress,
+  setFocus,
+} from "../utils";
 
 import "../styles/NewNoteStyles.scss";
 
@@ -19,18 +23,17 @@ const NewNote = () => {
 
   const shouldCreateNote = note.body.trim() || note.title.trim();
 
-  const ref = useRef(null);
+  const noteRef = useRef<HTMLDivElement>(null);
+  const newNoteBodyRef = useRef<HTMLDivElement>(null);
 
   const { createNote, fetchNotes, isLoading } = useNoteAction();
 
-  const newNoteBody = document.getElementById("new-note-body");
-
   useEffect(() => {
-    newNoteBody?.focus();
-  }, [newNoteBody]);
+    setFocus(newNoteBodyRef);
+  }, [newNoteBodyRef]);
 
   const expandAddingForm = () => {
-    newNoteBody?.scrollIntoView(false);
+    newNoteBodyRef?.current?.scrollIntoView(false);
     setIsAddingFormExpanded(true);
   };
 
@@ -47,11 +50,11 @@ const NewNote = () => {
     }
   }, [fetchNotes, shouldCreateNote, note, createNote]);
 
-  useOutsideClick(ref, () => addNewNote());
+  useOutsideClick(noteRef, () => addNewNote());
 
   return (
     <div className="new-note-wrapper">
-      <div className="new-note-box" ref={ref}>
+      <div className="new-note-box" ref={noteRef}>
         {isAddingFormExpanded && !isLoading && (
           <div
             id="new-note-title"
@@ -62,13 +65,14 @@ const NewNote = () => {
             onInput={(event: ChangeEvent<HTMLDivElement>) =>
               handleChange(event, note, setNote)
             }
-            onKeyDown={handleEnterPress}
+            onKeyDown={(e) => handleEnterPress(e, newNoteBodyRef)}
           />
         )}
         {isLoading ? (
           <Loader type={LoaderTypes.linear} />
         ) : (
           <div
+            ref={newNoteBodyRef}
             id="new-note-body"
             className="note-body"
             contentEditable

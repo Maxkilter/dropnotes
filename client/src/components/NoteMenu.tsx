@@ -7,7 +7,7 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import Loader, { LoaderTypes } from "./Loader";
 import { makeStyles } from "@material-ui/core/styles";
-import { useNoteAction } from "../hooks/useNoteAction";
+import { useNoteAction } from "../hooks";
 import { NoteProps } from "./Note";
 
 const ITEM_HEIGHT = 32;
