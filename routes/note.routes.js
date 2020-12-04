@@ -21,9 +21,23 @@ router.post("/create", authMid, async (req, res) => {
   }
 });
 
+router.get("/search/:query", authMid, async (req, res) => {
+  try {
+    const notes = await Note.find({
+      owner: req.user.userId,
+      $text: { $search: req.params.query },
+    }).sort({ date: -1 });
+    res.json(notes);
+  } catch (e) {
+    res.status(500).json({ message: "Something went wrong, try again :-(" });
+  }
+});
+
 router.get("/", authMid, async (req, res) => {
   try {
-    const notes = await Note.find({ owner: req.user.userId });
+    const notes = await Note.find({
+      owner: req.user.userId,
+    }).sort({ date: -1 });
     res.json(notes);
   } catch (e) {
     res.status(500).json({ message: "Something went wrong, try again :-(" });

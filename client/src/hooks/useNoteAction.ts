@@ -22,7 +22,19 @@ export const useNoteAction = () => {
   const fetchNotes = async () => {
     try {
       const notes = await request("/api/notes", "GET", null, headers);
-      if (notes) setNotes(notes.reverse());
+      if (notes) setNotes(notes);
+    } catch (e) {}
+  };
+
+  const searchNotes = async (query: string) => {
+    try {
+      const notes = await request(
+        `/api/notes/search/${query}`,
+        "GET",
+        null,
+        headers
+      );
+      if (notes) setNotes(notes);
     } catch (e) {}
   };
 
@@ -49,5 +61,12 @@ export const useNoteAction = () => {
     } catch (e) {}
   };
 
-  return { fetchNotes, createNote, updateNote, deleteNote, isLoading };
+  return {
+    fetchNotes,
+    searchNotes,
+    createNote,
+    updateNote,
+    deleteNote,
+    isLoading,
+  };
 };
