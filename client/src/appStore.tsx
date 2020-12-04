@@ -1,8 +1,6 @@
 //@ts-nocheck
 import React, {
   createContext,
-  Dispatch,
-  SetStateAction,
   useCallback,
   useEffect,
   useState,
@@ -20,7 +18,6 @@ const defaultNotificationState = {
 export const StoreContext = createContext({
   isReady: false,
   isModalOpen: false,
-  searchQuery: "",
   notes: [],
   editNote: { _id: "", title: "", body: "" },
   token: "",
@@ -28,7 +25,6 @@ export const StoreContext = createContext({
   notification: defaultNotificationState,
   logIn: (jwtToken: string, id: string) => {},
   logOut: () => {},
-  setSearchQuery: (e: string): Dispatch<SetStateAction<string>> => () => {},
   setEditNote: ({ _id, title, body }) => {},
   setIsModalOpen: (value: boolean) => {},
   setNotes: (value: []) => {},
@@ -43,7 +39,6 @@ export const StoreProvider = ({ children }: any) => {
   const [token, setToken] = useState("");
   const [userId, setUserId] = useState(null);
   const [isReady, setIsReady] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [notes, setNotes] = useState([]);
   const [editNote, setEditNote] = useState({ _id: "", title: "", body: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,14 +75,12 @@ export const StoreProvider = ({ children }: any) => {
     isModalOpen,
     token,
     userId,
-    searchQuery,
     notes,
     editNote,
     notification,
     logIn,
     logOut,
     setNotification,
-    setSearchQuery,
     setIsModalOpen,
     setEditNote,
     setNotes,
