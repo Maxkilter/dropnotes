@@ -1,8 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import { StoreContext } from "../appStore";
 
-const errorMessage = "Something went wrong, please try more or try later :-(";
-
 export const useRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
@@ -30,7 +28,7 @@ export const useRequest = () => {
           if (response.status === 401) {
             logOut();
           }
-          setError(errorMessage);
+          setError(data.message);
           throw new Error(data.message);
         }
 
@@ -39,7 +37,7 @@ export const useRequest = () => {
         return data;
       } catch (e) {
         setIsLoading(false);
-        setError(errorMessage);
+        setError(e.message);
         throw e.message;
       }
     },
