@@ -1,13 +1,15 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
+import { StoreContext } from "../appStore";
 
 const errorMessage = "Something went wrong, please try more or try later :-(";
 
 export const useRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
+  const { logOut } = useContext(StoreContext);
 
   const request = useCallback(
-    async (url, method = "GET", body, headers = {}) => {
+    async (url, method, body, headers = {}) => {
       setIsLoading(true);
 
       let formattedBody;
@@ -25,6 +27,9 @@ export const useRequest = () => {
         const data = await response.json();
 
         if (!response.ok) {
+          if (response.status === 401) {
+            logOut();
+          }
           setError(errorMessage);
           throw new Error(data.message);
         }
@@ -38,7 +43,7 @@ export const useRequest = () => {
         throw e.message;
       }
     },
-    []
+    [logOut]
   );
 
   const clearError = useCallback(() => setError(null), []);

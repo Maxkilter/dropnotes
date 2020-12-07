@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       marginLeft: "3%",
     },
+    logo: {
+      cursor: "pointer",
+    },
     title: {
       display: "none",
       [theme.breakpoints.up("sm")]: {
@@ -91,6 +94,8 @@ const Navbar = (props: Props) => {
     handleMenuClose();
   };
 
+  const handleLogoClick = () => window.location.reload();
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -145,7 +150,13 @@ const Navbar = (props: Props) => {
       <AppBar position="fixed">
         <Toolbar>
           <div className={classes.logoBlock}>
-            <img src="/logo.png" alt="logo" width="48" />
+            <img
+              className={classes.logo}
+              src="/logo.png"
+              alt="logo"
+              width="48"
+              onClick={handleLogoClick}
+            />
             <Typography className={classes.title} variant="h5" noWrap>
               Drop notes
             </Typography>

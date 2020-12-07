@@ -6,9 +6,6 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const User = require("../models/User");
 
-const errorMessage = "Something went wrong, please try more or try later :-(";
-
-// /api/auth/
 router.post(
   "/register",
   [
@@ -54,7 +51,7 @@ router.post(
     } catch (e) {
       res.status(500).json({
         status: 500,
-        message: errorMessage,
+        message: "Error occurred while creating a user",
       });
     }
   }
@@ -105,7 +102,7 @@ router.post(
     } catch (e) {
       res.status(500).json({
         status: 500,
-        message: errorMessage,
+        message: "Error occurred while authorization",
       });
     }
   }
