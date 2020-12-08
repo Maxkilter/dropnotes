@@ -5,7 +5,7 @@ import React, {
   ChangeEvent,
   useEffect,
 } from "react";
-import Loader, { LoaderTypes } from "./Loader";
+import Loader from "./Loader";
 import { useNoteAction, useOutsideClick } from "../hooks";
 import {
   noteDefaultState,
@@ -13,6 +13,7 @@ import {
   handleEnterPress,
   setFocus,
 } from "../utils";
+import { LoaderTypes } from "../types";
 
 import "../styles/NewNoteStyles.scss";
 
@@ -27,9 +28,7 @@ const NewNote = () => {
 
   const { createNote, fetchNotes, isLoading } = useNoteAction();
 
-  useEffect(() => {
-    setFocus(newNoteBodyRef);
-  }, [newNoteBodyRef]);
+  useEffect(() => setFocus(newNoteBodyRef), [newNoteBodyRef]);
 
   const expandAddingForm = () => {
     newNoteBodyRef?.current?.scrollIntoView(false);

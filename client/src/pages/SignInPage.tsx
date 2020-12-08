@@ -16,9 +16,10 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Loader, { LoaderTypes } from "../components/Loader";
+import Loader from "../components/Loader";
 import { StoreContext } from "../appStore";
 import { useRequest } from "../hooks";
+import { LoaderTypes } from "../types";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

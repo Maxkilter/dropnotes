@@ -4,18 +4,17 @@ import React, {
   ReactElement,
   Ref,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
+  memo,
 } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Slide, { SlideProps } from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import Loader, { LoaderTypes } from "./Loader";
-import { StoreContext } from "../appStore";
+import Loader from "./Loader";
 import {
   noteDefaultState,
   handleChange,
@@ -23,6 +22,7 @@ import {
   setCursorToEnd,
 } from "../utils";
 import { useNoteAction } from "../hooks";
+import { EditNoteProps, LoaderTypes } from "../types";
 
 import "../styles/EditNoteStyles.scss";
 
@@ -40,12 +40,13 @@ const Transition = forwardRef(
   }
 );
 
-const EditNote = () => {
-  const [note, setNote] = useState(noteDefaultState);
+const EditNote = (props: EditNoteProps) => {
+  const { id, title: originTitle, body: originBody, isEdit, setIsEdit } = props;
+
+  const [editNote, setEditNote] = useState(noteDefaultState);
   const [forceUpdate, setForceUpdate] = useState(false);
   const editNoteTitleRef = useRef<HTMLDivElement>(null);
   const editNoteBodyRef = useRef<HTMLDivElement>(null);
-  const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
   const { updateNote, fetchNotes, isLoading } = useNoteAction();
 
   useEffect(() => {
@@ -56,43 +57,36 @@ const EditNote = () => {
   }, [forceUpdate]);
 
   useEffect(() => {
-    setNote({
-      title: editNote.title,
-      body: editNote.body,
+    setEditNote({
+      title: originTitle!,
+      body: originBody,
     });
     setForceUpdate(true);
-  }, [editNote]);
+  }, [id, originTitle, originBody]);
 
   const shouldUpdateNote =
-    note.title.trim() !== editNote.title.trim() ||
-    note.body.trim() !== editNote.body.trim();
+    editNote.title.trim() !== originTitle?.trim() ||
+    editNote.body.trim() !== originBody.trim();
 
-  const closeModal = useCallback(() => setIsModalOpen(false), [setIsModalOpen]);
+  const closeModal = useCallback(() => setIsEdit(false), [setIsEdit]);
 
   const modifyNote = useCallback(async () => {
-    const { title, body } = note;
+    const { title, body } = editNote;
     closeModal();
 
     if (shouldUpdateNote) {
-      const updatedNote = await updateNote(editNote._id, title, body);
+      const updatedNote = await updateNote(id, title, body);
       // @ts-ignore
       if (updatedNote) {
         await fetchNotes();
       }
     }
-  }, [
-    fetchNotes,
-    note,
-    editNote._id,
-    closeModal,
-    shouldUpdateNote,
-    updateNote,
-  ]);
+  }, [fetchNotes, editNote, id, closeModal, shouldUpdateNote, updateNote]);
 
   return (
     <>
       <Dialog
-        open={isModalOpen}
+        open={isEdit}
         TransitionComponent={Transition}
         onClose={modifyNote}
       >
@@ -107,12 +101,12 @@ const EditNote = () => {
                 role="textbox"
                 data-placeholder="Title"
                 onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, note, setNote)
+                  handleChange(event, editNote, setEditNote)
                 }
                 onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
                 suppressContentEditableWarning
               >
-                {editNote.title}
+                {originTitle}
               </div>
               <div
                 ref={editNoteBodyRef}
@@ -123,11 +117,11 @@ const EditNote = () => {
                 role="textbox"
                 data-placeholder="Note"
                 onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, note, setNote)
+                  handleChange(event, editNote, setEditNote)
                 }
                 suppressContentEditableWarning
               >
-                {editNote.body}
+                {originBody}
               </div>
             </DialogContent>
           </div>
@@ -152,4 +146,4 @@ const EditNote = () => {
   );
 };
 
-export default EditNote;
+export default memo(EditNote);

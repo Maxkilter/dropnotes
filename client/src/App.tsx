@@ -2,10 +2,11 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Loader, { LoaderTypes } from "./components/Loader";
+import Loader from "./components/Loader";
 import navigation from "./routes";
 import Notification from "./components/Notification";
 import { StoreContext } from "./appStore";
+import { LoaderTypes } from "./types";
 
 import "./App.css";
 

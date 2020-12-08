@@ -1,14 +1,14 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, MouseEvent } from "react";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-import Loader, { LoaderTypes } from "./Loader";
+import Loader from "./Loader";
 import { makeStyles } from "@material-ui/core/styles";
 import { useNoteAction } from "../hooks";
-import { NoteProps } from "./Note";
+import { NoteMenuProps, LoaderTypes } from "../types";
 
 const ITEM_HEIGHT = 32;
 
@@ -22,15 +22,14 @@ const useStyles = makeStyles({
   },
 });
 
-const NoteMenu = ({ note }: { note: NoteProps }) => {
-  const { _id, title, body } = note;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+const NoteMenu = ({ id, title, body }: NoteMenuProps) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const classes = useStyles();
 
   const { fetchNotes, deleteNote, createNote, isLoading } = useNoteAction();
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -40,11 +39,11 @@ const NoteMenu = ({ note }: { note: NoteProps }) => {
 
   const removeNote = useCallback(async () => {
     handleClose();
-    const deleted = await deleteNote(_id);
+    const deleted = await deleteNote(id);
     if (deleted) {
       await fetchNotes();
     }
-  }, [_id, fetchNotes, deleteNote]);
+  }, [id, fetchNotes, deleteNote]);
 
   const copyNote = useCallback(async () => {
     handleClose();

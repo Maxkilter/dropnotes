@@ -1,10 +1,5 @@
 //@ts-nocheck
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { Color } from "@material-ui/lab";
 
 const storageName = "userData";
@@ -17,16 +12,12 @@ const defaultNotificationState = {
 
 export const StoreContext = createContext({
   isReady: false,
-  isModalOpen: false,
   notes: [],
-  editNote: { _id: "", title: "", body: "" },
   token: "",
   userId: null,
   notification: defaultNotificationState,
   logIn: (jwtToken: string, id: string) => {},
   logOut: () => {},
-  setEditNote: ({ _id, title, body }) => {},
-  setIsModalOpen: (value: boolean) => {},
   setNotes: (value: []) => {},
   setNotification: (value: {
     isOpen: boolean;
@@ -40,8 +31,6 @@ export const StoreProvider = ({ children }: any) => {
   const [userId, setUserId] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [notes, setNotes] = useState([]);
-  const [editNote, setEditNote] = useState({ _id: "", title: "", body: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState(defaultNotificationState);
 
   const logIn = useCallback((jwtToken, id) => {
@@ -72,17 +61,13 @@ export const StoreProvider = ({ children }: any) => {
 
   const store = {
     isReady,
-    isModalOpen,
     token,
     userId,
     notes,
-    editNote,
     notification,
     logIn,
     logOut,
     setNotification,
-    setIsModalOpen,
-    setEditNote,
     setNotes,
   };
   return (

@@ -13,6 +13,7 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import Search from "./Search";
 import { useHistory } from "react-router-dom";
 import { StoreContext } from "../appStore";
+import { NavbarProps } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,12 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props {
-  isAuthenticated: boolean;
-}
-
-const Navbar = (props: Props) => {
-  const { isAuthenticated } = props;
+const Navbar = ({ isAuthenticated }: NavbarProps) => {
   const { logOut } = useContext(StoreContext);
   const history = useHistory();
   const classes = useStyles();

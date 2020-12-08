@@ -9,7 +9,8 @@ import {
 } from "@material-ui/core/styles";
 import { debounce, DebouncedFunc } from "lodash";
 import { useNoteAction } from "../hooks";
-import Loader, { LoaderTypes } from "./Loader";
+import Loader from "./Loader";
+import { LoaderTypes } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

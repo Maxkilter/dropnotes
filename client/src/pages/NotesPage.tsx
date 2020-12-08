@@ -1,17 +1,16 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import NewNote from "../components/NewNote";
-import Note, { NoteProps } from "../components/Note";
-import EditNote from "../components/EditNote";
-import Loader, { LoaderTypes } from "../components/Loader";
+import Note from "../components/Note";
+import Loader from "../components/Loader";
 import { StoreContext } from "../appStore";
 import { useNoteAction } from "../hooks";
+import { LoaderTypes, NoteProps } from "../types";
 
 import "../styles/NotesPageStyles.scss";
 
 const NotesPage = () => {
-  const { notes, editNote } = useContext(StoreContext);
+  const { notes } = useContext(StoreContext);
   const { fetchNotes, isLoading } = useNoteAction();
-  const isEdit = editNote._id;
 
   useEffect(() => {
     fetchNotes();
@@ -25,7 +24,6 @@ const NotesPage = () => {
     <>
       <NewNote />
       <div className="notes-container">{renderNotes(notes)}</div>
-      {isEdit && <EditNote />}
       {isLoading && <Loader type={LoaderTypes.dots} />}
     </>
   );
