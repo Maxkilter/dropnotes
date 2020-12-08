@@ -2,14 +2,13 @@ import React, {
   useState,
   useRef,
   useCallback,
-  memo,
   ChangeEvent,
   useEffect,
 } from "react";
 import Loader, { LoaderTypes } from "./Loader";
 import { useNoteAction, useOutsideClick } from "../hooks";
 import {
-  defaultNoteState,
+  noteDefaultState,
   handleChange,
   handleEnterPress,
   setFocus,
@@ -19,7 +18,7 @@ import "../styles/NewNoteStyles.scss";
 
 const NewNote = () => {
   const [isAddingFormExpanded, setIsAddingFormExpanded] = useState(false);
-  const [note, setNote] = useState(defaultNoteState);
+  const [note, setNote] = useState(noteDefaultState);
 
   const shouldCreateNote = note.body.trim() || note.title.trim();
 
@@ -39,7 +38,7 @@ const NewNote = () => {
 
   const addNewNote = useCallback(async () => {
     const { title, body } = note;
-    setNote(defaultNoteState);
+    setNote(noteDefaultState);
     setIsAddingFormExpanded(false);
 
     if (shouldCreateNote) {
@@ -98,4 +97,4 @@ const NewNote = () => {
   );
 };
 
-export default memo(NewNote);
+export default NewNote;

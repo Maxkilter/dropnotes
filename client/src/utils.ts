@@ -6,7 +6,7 @@ import {
   SetStateAction,
 } from "react";
 
-export const defaultNoteState = {
+export const noteDefaultState = {
   title: "",
   body: "",
 };
@@ -38,3 +38,18 @@ export const handleChange = (
     ...note,
     [e.target.id.includes("body") ? "body" : "title"]: e.target.innerText,
   });
+
+export const setCursorToEnd = (el: RefObject<HTMLDivElement>) => {
+  const currentEl = el.current;
+  const range = document.createRange();
+  const sel = window.getSelection();
+  if (currentEl) {
+    if (currentEl.innerText?.length !== 0) {
+      range.setStart(currentEl, 1);
+      range.collapse(true);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    setFocus(el);
+  }
+};

@@ -9,8 +9,9 @@ import { useNoteAction } from "../hooks";
 import "../styles/NotesPageStyles.scss";
 
 const NotesPage = () => {
-  const { notes } = useContext(StoreContext);
+  const { notes, editNote } = useContext(StoreContext);
   const { fetchNotes, isLoading } = useNoteAction();
+  const isEdit = editNote._id;
 
   useEffect(() => {
     fetchNotes();
@@ -24,7 +25,7 @@ const NotesPage = () => {
     <>
       <NewNote />
       <div className="notes-container">{renderNotes(notes)}</div>
-      <EditNote />
+      {isEdit && <EditNote />}
       {isLoading && <Loader type={LoaderTypes.dots} />}
     </>
   );

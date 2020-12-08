@@ -16,7 +16,12 @@ import Slide, { SlideProps } from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import Loader, { LoaderTypes } from "./Loader";
 import { StoreContext } from "../appStore";
-import { defaultNoteState, handleChange, handleEnterPress } from "../utils";
+import {
+  noteDefaultState,
+  handleChange,
+  handleEnterPress,
+  setCursorToEnd,
+} from "../utils";
 import { useNoteAction } from "../hooks";
 
 import "../styles/EditNoteStyles.scss";
@@ -36,16 +41,26 @@ const Transition = forwardRef(
 );
 
 const EditNote = () => {
-  const [note, setNote] = useState(defaultNoteState);
-  const { updateNote, fetchNotes, isLoading } = useNoteAction();
+  const [note, setNote] = useState(noteDefaultState);
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const editNoteTitleRef = useRef<HTMLDivElement>(null);
   const editNoteBodyRef = useRef<HTMLDivElement>(null);
   const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
+  const { updateNote, fetchNotes, isLoading } = useNoteAction();
+
+  useEffect(() => {
+    setCursorToEnd(editNoteTitleRef);
+    return function cleanup() {
+      setForceUpdate(false);
+    };
+  }, [forceUpdate]);
 
   useEffect(() => {
     setNote({
       title: editNote.title,
       body: editNote.body,
     });
+    setForceUpdate(true);
   }, [editNote]);
 
   const shouldUpdateNote =
@@ -54,7 +69,7 @@ const EditNote = () => {
 
   const closeModal = useCallback(() => setIsModalOpen(false), [setIsModalOpen]);
 
-  const rewriteNote = useCallback(async () => {
+  const modifyNote = useCallback(async () => {
     const { title, body } = note;
     closeModal();
 
@@ -79,12 +94,13 @@ const EditNote = () => {
       <Dialog
         open={isModalOpen}
         TransitionComponent={Transition}
-        onClose={rewriteNote}
+        onClose={modifyNote}
       >
         <div className="edit-note-wrapper">
           <div className="edit-note-box">
             <DialogContent>
               <div
+                ref={editNoteTitleRef}
                 id="edit-note-title"
                 className="note-title"
                 contentEditable
@@ -124,7 +140,7 @@ const EditNote = () => {
             <div
               className="edit-note-button"
               role="button"
-              onClick={rewriteNote}
+              onClick={modifyNote}
             >
               Update
             </div>
