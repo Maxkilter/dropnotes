@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { Color } from "@material-ui/lab";
 
@@ -13,7 +12,7 @@ const defaultNotificationState = {
 export const StoreContext = createContext({
   isReady: false,
   notes: [],
-  token: "",
+  token: null,
   userId: null,
   notification: defaultNotificationState,
   logIn: (jwtToken: string, id: string) => {},
@@ -27,7 +26,7 @@ export const StoreContext = createContext({
 });
 
 export const StoreProvider = ({ children }: any) => {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [notes, setNotes] = useState([]);
