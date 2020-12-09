@@ -39,18 +39,16 @@ const NoteMenu = ({ id, title, body }: NoteMenuProps) => {
 
   const removeNote = useCallback(async () => {
     handleClose();
-    const deleted = await deleteNote(id);
-    if (deleted) {
-      await fetchNotes();
-    }
+    const data = await deleteNote(id);
+
+    if (data) await fetchNotes();
   }, [id, fetchNotes, deleteNote]);
 
   const copyNote = useCallback(async () => {
     handleClose();
     const copiedNote = await createNote(title, body);
-    if (copiedNote) {
-      await fetchNotes();
-    }
+
+    if (copiedNote) await fetchNotes();
   }, [title, body, fetchNotes, createNote]);
 
   return (

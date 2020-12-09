@@ -72,22 +72,28 @@ const EditNote = (props: EditNoteProps) => {
 
   const modifyNote = useCallback(async () => {
     const { title, body } = editNote;
-    closeModal();
 
     if (shouldUpdateNote) {
       const updatedNote = await updateNote(id, title, body);
-      // @ts-ignore
-      if (updatedNote) {
-        await fetchNotes();
-      }
+      if (updatedNote) await fetchNotes();
     }
-  }, [fetchNotes, editNote, id, closeModal, shouldUpdateNote, updateNote]);
+    if (!isLoading) closeModal();
+  }, [
+    fetchNotes,
+    editNote,
+    id,
+    closeModal,
+    shouldUpdateNote,
+    updateNote,
+    isLoading,
+  ]);
 
   return (
     <>
       <Dialog
         open={isEdit}
         TransitionComponent={Transition}
+        disableEscapeKeyDown
         onClose={modifyNote}
       >
         <div className="edit-note-wrapper">

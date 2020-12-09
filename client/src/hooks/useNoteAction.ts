@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { StoreContext } from "../appStore";
 import { useRequest } from "./useRequest";
 
@@ -17,49 +17,70 @@ export const useNoteAction = () => {
     }
   }, [error, clearError, setNotification]);
 
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers = useMemo(() => {
+    return {
+      Authorization: `Bearer ${token}`,
+    };
+  }, [token]);
 
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     try {
       const notes = await request("/api/notes", "GET", null, headers);
       if (notes) setNotes(notes);
     } catch (e) {}
-  };
+  }, [headers, request, setNotes]);
 
-  const searchNotes = async (query: string) => {
-    try {
-      const notes = await request(
-        `/api/notes/search/${query}`,
-        "GET",
-        null,
-        headers
-      );
-      if (notes) setNotes(notes);
-    } catch (e) {}
-  };
+  const searchNotes = useCallback(
+    async (query: string) => {
+      try {
+        const notes = await request(
+          `/api/notes/search/${query}`,
+          "GET",
+          null,
+          headers
+        );
+        if (notes) setNotes(notes);
+      } catch (e) {}
+    },
+    [headers, request, setNotes]
+  );
 
-  const createNote = async (title: string | undefined, body: string) => {
-    try {
-      return await request(
-        "/api/notes/create",
-        "POST",
-        { title, body },
-        headers
-      );
-    } catch (e) {}
-  };
+  const createNote = useCallback(
+    async (title: string | undefined, body: string) => {
+      try {
+        return await request(
+          "/api/notes/create",
+          "POST",
+          { title, body },
+          headers
+        );
+      } catch (e) {}
+    },
+    [headers, request]
+  );
 
-  const updateNote = async (id: string, title: string, body: string) => {
-    try {
-      return await request(`/api/notes/${id}`, "PUT", { title, body }, headers);
-    } catch (e) {}
-  };
+  const updateNote = useCallback(
+    async (id: string, title: string, body: string) => {
+      try {
+        return await request(
+          `/api/notes/${id}`,
+          "PUT",
+          { title, body },
+          headers
+        );
+      } catch (e) {}
+    },
+    [headers, request]
+  );
 
-  const deleteNote = async (id: string) => {
-    try {
-      return await request(`api/notes/${id}`, "DELETE", null, headers);
-    } catch (e) {}
-  };
+  const deleteNote = useCallback(
+    async (id: string) => {
+      try {
+        return await request(`api/notes/${id}`, "DELETE", null, headers);
+      } catch (e) {}
+    },
+    [headers, request]
+  );
 
   return {
     fetchNotes,

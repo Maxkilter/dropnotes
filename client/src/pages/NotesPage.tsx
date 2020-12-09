@@ -13,8 +13,11 @@ const NotesPage = () => {
   const { fetchNotes, isLoading } = useNoteAction();
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    const getNotes = async () => {
+      await fetchNotes();
+    };
+    getNotes();
+  }, [fetchNotes]);
 
   const renderNotes = useCallback((notes: NoteProps[]) => {
     return notes.map((note: NoteProps) => <Note key={note._id} note={note} />);

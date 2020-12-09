@@ -67,9 +67,7 @@ const Search = () => {
     async (query: string) => {
       setPrevQuery(query);
 
-      if (query !== prevQuery) {
-        await searchNotes(query);
-      }
+      if (query !== prevQuery) await searchNotes(query);
     },
     [searchNotes, prevQuery]
   );
@@ -79,12 +77,9 @@ const Search = () => {
       const searchFn = debounce(sendQuery, 500);
 
       setPrevSearchFn(() => {
-        if (prevSearchFn?.cancel) {
-          prevSearchFn.cancel();
-        }
+        if (prevSearchFn?.cancel) prevSearchFn.cancel();
         return searchFn;
       });
-
       return value ? searchFn(value) : fetchNotes();
     },
     [sendQuery, prevSearchFn, fetchNotes]

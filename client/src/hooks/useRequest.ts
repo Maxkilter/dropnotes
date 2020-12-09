@@ -25,9 +25,8 @@ export const useRequest = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          if (response.status === 401) {
-            logOut();
-          }
+          if (response.status === 401) logOut();
+
           setError(data.message);
           throw new Error(data.message);
         }

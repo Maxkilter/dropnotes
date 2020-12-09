@@ -42,9 +42,7 @@ const NewNote = () => {
 
     if (shouldCreateNote) {
       const newNote = await createNote(title, body);
-      if (newNote) {
-        await fetchNotes();
-      }
+      if (newNote) await fetchNotes();
     }
   }, [fetchNotes, shouldCreateNote, note, createNote]);
 
