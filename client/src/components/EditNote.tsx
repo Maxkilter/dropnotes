@@ -89,66 +89,64 @@ const EditNote = (props: EditNoteProps) => {
   ]);
 
   return (
-    <>
-      <Dialog
-        open={isEdit}
-        TransitionComponent={Transition}
-        disableEscapeKeyDown
-        onClose={modifyNote}
-      >
-        <div className="edit-note-wrapper">
-          <div className="edit-note-box">
-            <DialogContent>
-              <div
-                ref={editNoteTitleRef}
-                id="edit-note-title"
-                className="note-title"
-                contentEditable
-                role="textbox"
-                data-placeholder="Title"
-                onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, editNote, setEditNote)
-                }
-                onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
-                suppressContentEditableWarning
-              >
-                {originTitle}
-              </div>
-              <div
-                ref={editNoteBodyRef}
-                id="edit-note-body"
-                className="note-body"
-                contentEditable
-                aria-multiline
-                role="textbox"
-                data-placeholder="Note"
-                onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, editNote, setEditNote)
-                }
-                suppressContentEditableWarning
-              >
-                {originBody}
-              </div>
-            </DialogContent>
-          </div>
-        </div>
-        <DialogActions>
-          <div className="edit-note-button" role="button" onClick={closeModal}>
-            Close
-          </div>
-          {shouldUpdateNote && (
+    <Dialog
+      open={isEdit}
+      TransitionComponent={Transition}
+      disableEscapeKeyDown
+      onClose={modifyNote}
+    >
+      <div className="edit-note-wrapper">
+        <div className="edit-note-box">
+          <DialogContent>
             <div
-              className="edit-note-button"
-              role="button"
-              onClick={modifyNote}
+              ref={editNoteTitleRef}
+              id="edit-note-title"
+              className="note-title"
+              contentEditable
+              role="textbox"
+              data-placeholder="Title"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, editNote, setEditNote)
+              }
+              onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
+              suppressContentEditableWarning
             >
-              Update
+              {originTitle}
             </div>
-          )}
-        </DialogActions>
-      </Dialog>
-      {isLoading && <Loader type={LoaderTypes.dots} />}
-    </>
+            <div
+              ref={editNoteBodyRef}
+              id="edit-note-body"
+              className="note-body"
+              contentEditable
+              aria-multiline
+              role="textbox"
+              data-placeholder="Note"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, editNote, setEditNote)
+              }
+              suppressContentEditableWarning
+            >
+              {originBody}
+            </div>
+          </DialogContent>
+        </div>
+      </div>
+      <DialogActions>
+        {isLoading && (
+          <div className="loader-wrapper">
+            <Loader type={LoaderTypes.linear} />
+          </div>
+        )}
+        <div className="edit-note-button" role="button" onClick={closeModal}>
+          Close
+        </div>
+        {shouldUpdateNote && !isLoading && (
+          <div className="edit-note-button" role="button" onClick={modifyNote}>
+            Update
+          </div>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 
