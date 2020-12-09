@@ -4,18 +4,17 @@ import React, {
   ReactElement,
   Ref,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
+  memo,
 } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import Slide, { SlideProps } from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import Loader, { LoaderTypes } from "./Loader";
-import { StoreContext } from "../appStore";
+import Loader from "./Loader";
 import {
   noteDefaultState,
   handleChange,
@@ -23,6 +22,7 @@ import {
   setCursorToEnd,
 } from "../utils";
 import { useNoteAction } from "../hooks";
+import { EditNoteProps, LoaderTypes } from "../types";
 
 import "../styles/EditNoteStyles.scss";
 
@@ -40,12 +40,13 @@ const Transition = forwardRef(
   }
 );
 
-const EditNote = () => {
-  const [note, setNote] = useState(noteDefaultState);
+const EditNote = (props: EditNoteProps) => {
+  const { id, title: originTitle, body: originBody, isEdit, setIsEdit } = props;
+
+  const [editNote, setEditNote] = useState(noteDefaultState);
   const [forceUpdate, setForceUpdate] = useState(false);
   const editNoteTitleRef = useRef<HTMLDivElement>(null);
   const editNoteBodyRef = useRef<HTMLDivElement>(null);
-  const { editNote, isModalOpen, setIsModalOpen } = useContext(StoreContext);
   const { updateNote, fetchNotes, isLoading } = useNoteAction();
 
   useEffect(() => {
@@ -56,100 +57,97 @@ const EditNote = () => {
   }, [forceUpdate]);
 
   useEffect(() => {
-    setNote({
-      title: editNote.title,
-      body: editNote.body,
+    setEditNote({
+      title: originTitle!,
+      body: originBody,
     });
     setForceUpdate(true);
-  }, [editNote]);
+  }, [id, originTitle, originBody]);
 
   const shouldUpdateNote =
-    note.title.trim() !== editNote.title.trim() ||
-    note.body.trim() !== editNote.body.trim();
+    editNote.title.trim() !== originTitle?.trim() ||
+    editNote.body.trim() !== originBody.trim();
 
-  const closeModal = useCallback(() => setIsModalOpen(false), [setIsModalOpen]);
+  const closeModal = useCallback(() => setIsEdit(false), [setIsEdit]);
 
   const modifyNote = useCallback(async () => {
-    const { title, body } = note;
-    closeModal();
+    const { title, body } = editNote;
 
     if (shouldUpdateNote) {
-      const updatedNote = await updateNote(editNote._id, title, body);
-      // @ts-ignore
-      if (updatedNote) {
-        await fetchNotes();
-      }
+      const updatedNote = await updateNote(id, title, body);
+      if (updatedNote) await fetchNotes();
     }
+    if (!isLoading) closeModal();
   }, [
     fetchNotes,
-    note,
-    editNote._id,
+    editNote,
+    id,
     closeModal,
     shouldUpdateNote,
     updateNote,
+    isLoading,
   ]);
 
   return (
-    <>
-      <Dialog
-        open={isModalOpen}
-        TransitionComponent={Transition}
-        onClose={modifyNote}
-      >
-        <div className="edit-note-wrapper">
-          <div className="edit-note-box">
-            <DialogContent>
-              <div
-                ref={editNoteTitleRef}
-                id="edit-note-title"
-                className="note-title"
-                contentEditable
-                role="textbox"
-                data-placeholder="Title"
-                onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, note, setNote)
-                }
-                onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
-                suppressContentEditableWarning
-              >
-                {editNote.title}
-              </div>
-              <div
-                ref={editNoteBodyRef}
-                id="edit-note-body"
-                className="note-body"
-                contentEditable
-                aria-multiline
-                role="textbox"
-                data-placeholder="Note"
-                onInput={(event: ChangeEvent<HTMLDivElement>) =>
-                  handleChange(event, note, setNote)
-                }
-                suppressContentEditableWarning
-              >
-                {editNote.body}
-              </div>
-            </DialogContent>
-          </div>
-        </div>
-        <DialogActions>
-          <div className="edit-note-button" role="button" onClick={closeModal}>
-            Close
-          </div>
-          {shouldUpdateNote && (
+    <Dialog
+      open={isEdit}
+      TransitionComponent={Transition}
+      disableEscapeKeyDown
+      onClose={modifyNote}
+    >
+      <div className="edit-note-wrapper">
+        <div className="edit-note-box">
+          <DialogContent>
             <div
-              className="edit-note-button"
-              role="button"
-              onClick={modifyNote}
+              ref={editNoteTitleRef}
+              id="edit-note-title"
+              className="note-title"
+              contentEditable
+              role="textbox"
+              data-placeholder="Title"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, editNote, setEditNote)
+              }
+              onKeyDown={(event) => handleEnterPress(event, editNoteBodyRef)}
+              suppressContentEditableWarning
             >
-              Update
+              {originTitle}
             </div>
-          )}
-        </DialogActions>
-      </Dialog>
-      {isLoading && <Loader type={LoaderTypes.dots} />}
-    </>
+            <div
+              ref={editNoteBodyRef}
+              id="edit-note-body"
+              className="note-body"
+              contentEditable
+              aria-multiline
+              role="textbox"
+              data-placeholder="Note"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, editNote, setEditNote)
+              }
+              suppressContentEditableWarning
+            >
+              {originBody}
+            </div>
+          </DialogContent>
+        </div>
+      </div>
+      <DialogActions>
+        {isLoading && (
+          <div className="loader-wrapper">
+            <Loader type={LoaderTypes.linear} />
+          </div>
+        )}
+        <div className="edit-note-button" role="button" onClick={closeModal}>
+          Close
+        </div>
+        {shouldUpdateNote && !isLoading && (
+          <div className="edit-note-button" role="button" onClick={modifyNote}>
+            Update
+          </div>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default EditNote;
+export default memo(EditNote);

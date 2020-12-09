@@ -3,17 +3,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { LinearProgress } from "@material-ui/core";
-
-export enum LoaderTypes {
-  darken = "darken",
-  circular = "circular",
-  linear = "linear",
-  dots = "dots",
-}
-
-interface Props {
-  type: LoaderTypes;
-}
+import { LoaderProps, LoaderTypes } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,8 +49,7 @@ const DotsProgress = () => {
   return <span className={classes.dots}>{`Loading${text}`}</span>;
 };
 
-const Loader = (props: Props) => {
-  const { type } = props;
+const Loader = ({ type }: LoaderProps) => {
   const classes = useStyles();
 
   if (type === LoaderTypes.darken) {

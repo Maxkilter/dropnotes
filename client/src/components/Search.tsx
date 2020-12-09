@@ -9,7 +9,8 @@ import {
 } from "@material-ui/core/styles";
 import { debounce, DebouncedFunc } from "lodash";
 import { useNoteAction } from "../hooks";
-import Loader, { LoaderTypes } from "./Loader";
+import Loader from "./Loader";
+import { LoaderTypes } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,9 +67,7 @@ const Search = () => {
     async (query: string) => {
       setPrevQuery(query);
 
-      if (query !== prevQuery) {
-        await searchNotes(query);
-      }
+      if (query !== prevQuery) await searchNotes(query);
     },
     [searchNotes, prevQuery]
   );
@@ -78,12 +77,9 @@ const Search = () => {
       const searchFn = debounce(sendQuery, 500);
 
       setPrevSearchFn(() => {
-        if (prevSearchFn?.cancel) {
-          prevSearchFn.cancel();
-        }
+        if (prevSearchFn?.cancel) prevSearchFn.cancel();
         return searchFn;
       });
-
       return value ? searchFn(value) : fetchNotes();
     },
     [sendQuery, prevSearchFn, fetchNotes]

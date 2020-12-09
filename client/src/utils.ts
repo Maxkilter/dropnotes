@@ -5,6 +5,7 @@ import {
   RefObject,
   SetStateAction,
 } from "react";
+import { NoteState } from "./types";
 
 export const noteDefaultState = {
   title: "",
@@ -23,11 +24,6 @@ export const handleEnterPress = (
     setFocus(element);
   }
 };
-
-interface NoteState {
-  title: string;
-  body: string;
-}
 
 export const handleChange = (
   e: ChangeEvent<HTMLDivElement>,
