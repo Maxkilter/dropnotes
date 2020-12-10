@@ -4,6 +4,7 @@ import React, {
   FormEvent,
   useContext,
   useEffect,
+  useCallback,
 } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -17,6 +18,7 @@ import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import { StoreContext } from "../appStore";
 import { useRequest } from "../hooks";
+import { isNoFormErrors, validate } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,11 +47,13 @@ const SignUpPage = () => {
   const { request, isLoading, error, clearError } = useRequest();
 
   const [form, setForm] = useState({
-    firstName: null,
-    lastName: null,
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
   });
+
+  const [formErrors, setFormErrors] = useState({ email: "", password: "" });
 
   useEffect(() => {
     if (error) {
@@ -62,35 +66,53 @@ const SignUpPage = () => {
     }
   }, [error, clearError, setNotification]);
 
-  const changeHandler = (event: ChangeEvent<HTMLFormElement>) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const signUpHandler = async (event: FormEvent) => {
-    event.preventDefault();
-
-    try {
-      const signUpData = await request("/api/auth/register", "POST", {
+  const changeHandler = useCallback(
+    (event: ChangeEvent<HTMLFormElement>) => {
+      setForm({
         ...form,
+        [event.target.name]: event.target.value,
       });
 
-      setNotification({
-        isOpen: true,
-        message: signUpData.message,
-        severity: "success",
-      });
+      if (formErrors.email !== "" && event.target.name === "email") {
+        setFormErrors({ ...formErrors, email: "" });
+      }
+      if (formErrors.password !== "" && event.target.name === "password") {
+        setFormErrors({ ...formErrors, password: "" });
+      }
+    },
+    [form, setForm, formErrors, setFormErrors]
+  );
 
-      const signIndData = await request("/api/auth/login", "POST", {
-        email: form.email,
-        password: form.password,
-      });
+  const signUpHandler = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
 
-      logIn(signIndData.token, signIndData.userId);
-    } catch (e) {}
-  };
+      const errors = validate(form);
+      if (isNoFormErrors(errors)) {
+        try {
+          const signUpData = await request("/api/auth/register", "POST", {
+            ...form,
+          });
+
+          setNotification({
+            isOpen: true,
+            message: signUpData.message,
+            severity: "success",
+          });
+
+          const signIndData = await request("/api/auth/login", "POST", {
+            email: form.email,
+            password: form.password,
+          });
+
+          logIn(signIndData.token, signIndData.userId);
+        } catch (e) {}
+      } else {
+        setFormErrors(errors);
+      }
+    },
+    [form, logIn, request, setNotification]
+  );
 
   return (
     <Container component="main" maxWidth="xs">
@@ -140,6 +162,8 @@ const SignUpPage = () => {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                error={!!formErrors.email}
+                helperText={formErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -152,6 +176,8 @@ const SignUpPage = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                error={!!formErrors.password}
+                helperText={formErrors.password}
               />
             </Grid>
           </Grid>
