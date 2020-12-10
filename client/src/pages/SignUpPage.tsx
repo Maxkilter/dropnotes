@@ -87,7 +87,7 @@ const SignUpPage = () => {
     async (event: FormEvent) => {
       event.preventDefault();
 
-      const errors = validate(form);
+      const errors = validate({ email: form.email, password: form.password });
       if (isNoFormErrors(errors)) {
         try {
           const signUpData = await request("/api/auth/register", "POST", {

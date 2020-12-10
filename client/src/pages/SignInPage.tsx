@@ -1,6 +1,7 @@
 import React, {
   ChangeEvent,
   FormEvent,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -19,6 +20,7 @@ import Loader from "../components/Loader";
 import { StoreContext } from "../appStore";
 import { useRequest } from "../hooks";
 import { LoaderTypes } from "../types";
+import { isNoFormErrors, validate } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -50,6 +52,8 @@ const SignInPage = () => {
     password: "",
   });
 
+  const [formError, setFormError] = useState({ email: "" });
+
   useEffect(() => {
     if (error) {
       setNotification({
@@ -61,21 +65,36 @@ const SignInPage = () => {
     }
   }, [error, clearError, setNotification]);
 
-  const signInHandler = async (event: FormEvent) => {
-    event.preventDefault();
+  const changeHandler = useCallback(
+    (event: ChangeEvent<HTMLFormElement>) => {
+      setForm({
+        ...form,
+        [event.target.name]: event.target.value,
+      });
 
-    try {
-      const data = await request("/api/auth/login", "POST", { ...form });
-      logIn(data.token, data.userId);
-    } catch (e) {}
-  };
+      if (formError.email !== "" && event.target.name === "email") {
+        setFormError({ email: "" });
+      }
+    },
+    [form, setForm, formError, setFormError]
+  );
 
-  const changeHandler = (event: ChangeEvent<HTMLFormElement>) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  };
+  const signInHandler = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
+
+      const error = validate({ email: form.email });
+      if (isNoFormErrors(error)) {
+        try {
+          const data = await request("/api/auth/login", "POST", { ...form });
+          logIn(data.token, data.userId);
+        } catch (e) {}
+      } else {
+        setFormError(error);
+      }
+    },
+    [form, logIn, request]
+  );
 
   if (isLoading) {
     return <Loader type={LoaderTypes.darken} />;
@@ -106,6 +125,8 @@ const SignInPage = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            error={!!formError.email}
+            helperText={formError.email}
           />
           <TextField
             variant="outlined"
