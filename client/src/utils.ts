@@ -5,7 +5,7 @@ import {
   RefObject,
   SetStateAction,
 } from "react";
-import { NoteState } from "./types";
+import { NoteProps, NoteState } from "./types";
 
 export const noteDefaultState = {
   title: "",
@@ -65,3 +65,5 @@ export const isNoFormErrors = (errors: { [key: string]: string }) => {
   for (const error in errors) if (!!errors[error]) return false;
   return true;
 };
+
+export const isNoNotes = (notes: NoteProps[]) => notes.length === 0;

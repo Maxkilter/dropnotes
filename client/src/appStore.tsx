@@ -11,6 +11,7 @@ const defaultNotificationState = {
 
 export const StoreContext = createContext({
   isReady: false,
+  isNoMatching: false,
   notes: [],
   token: null,
   userId: null,
@@ -18,6 +19,7 @@ export const StoreContext = createContext({
   logIn: (jwtToken: string, id: string) => {},
   logOut: () => {},
   setNotes: (value: []) => {},
+  setIsNoMatching: (value: boolean) => {},
   setNotification: (value: {
     isOpen: boolean;
     message: string;
@@ -30,6 +32,7 @@ export const StoreProvider = ({ children }: any) => {
   const [userId, setUserId] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [notes, setNotes] = useState([]);
+  const [isNoMatching, setIsNoMatching] = useState(false);
   const [notification, setNotification] = useState(defaultNotificationState);
 
   const logIn = useCallback((jwtToken, id) => {
@@ -60,6 +63,7 @@ export const StoreProvider = ({ children }: any) => {
 
   const store = {
     isReady,
+    isNoMatching,
     token,
     userId,
     notes,
@@ -68,6 +72,7 @@ export const StoreProvider = ({ children }: any) => {
     logOut,
     setNotification,
     setNotes,
+    setIsNoMatching,
   };
   return (
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>

@@ -1,9 +1,12 @@
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { StoreContext } from "../appStore";
 import { useRequest } from "./useRequest";
+import { isNoNotes } from "../utils";
 
 export const useNoteAction = () => {
-  const { token, setNotes, setNotification } = useContext(StoreContext);
+  const { token, setNotes, setNotification, setIsNoMatching } = useContext(
+    StoreContext
+  );
   const { request, isLoading, clearError, error } = useRequest();
 
   useEffect(() => {
@@ -26,9 +29,12 @@ export const useNoteAction = () => {
   const fetchNotes = useCallback(async () => {
     try {
       const notes = await request("/api/notes", "GET", null, headers);
-      if (notes) setNotes(notes);
+      if (notes) {
+        setIsNoMatching(false);
+        setNotes(notes);
+      }
     } catch (e) {}
-  }, [headers, request, setNotes]);
+  }, [headers, request, setNotes, setIsNoMatching]);
 
   const searchNotes = useCallback(
     async (query: string) => {
@@ -39,10 +45,13 @@ export const useNoteAction = () => {
           null,
           headers
         );
-        if (notes) setNotes(notes);
+        if (notes) {
+          isNoNotes(notes) ? setIsNoMatching(true) : setIsNoMatching(false);
+          setNotes(notes);
+        }
       } catch (e) {}
     },
-    [headers, request, setNotes]
+    [headers, request, setNotes, setIsNoMatching]
   );
 
   const createNote = useCallback(

@@ -1,0 +1,19 @@
+.no-notes-placeholder {
+  .no-notes-text {
+    text-align: center;
+    position: relative;
+    top: 28px;
+  }
+  .notes-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.1;
+  }
+}
+
+@media only screen and (max-width: 414px) {
+  .notes-image {
+    width: 95%;
+  }
+}
