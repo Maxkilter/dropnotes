@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { LinearProgress } from "@material-ui/core";
 import { LoaderProps, LoaderTypes } from "../types";
@@ -25,6 +26,13 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#757575",
       fontSize: 14,
     },
+    mobileDots: {
+      position: "fixed",
+      top: 70,
+      left: 10,
+      color: "#757575",
+      fontSize: 10,
+    },
     circular: {
       position: "absolute",
       left: 1,
@@ -35,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const DotsProgress = () => {
   const [dots, setDots] = useState(1);
   const classes = useStyles();
+  const matches = useMediaQuery("(max-width:415px)");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -46,7 +55,11 @@ const DotsProgress = () => {
   }, [dots, setDots]);
 
   const text = dots === 0 ? "" : ".".repeat(dots);
-  return <span className={classes.dots}>{`Loading${text}`}</span>;
+  return (
+    <span
+      className={matches ? classes.mobileDots : classes.dots}
+    >{`Loading${text}`}</span>
+  );
 };
 
 const Loader = ({ type }: LoaderProps) => {

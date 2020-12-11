@@ -44,3 +44,9 @@
     color: #80868b;
   }
 }
+
+@media only screen and (max-width: 414px) {
+  .new-note-box{
+    width: 220px;
+  }
+}
