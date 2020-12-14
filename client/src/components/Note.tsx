@@ -19,6 +19,7 @@ const useStyles = makeStyles({
   },
   noteBody: {
     whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
   },
   noteBottom: {
     display: "flex",
