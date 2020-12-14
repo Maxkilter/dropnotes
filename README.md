@@ -4,7 +4,7 @@
 
 #### START Instructions:
 
-1. install Node 14.x vertion;
+1. install Node 14.x version;
 
 2. install yarn package manager;
 
