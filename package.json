@@ -9,7 +9,6 @@
     "client": "yarn --cwd client start",
     "client:install": "yarn --cwd client install",
     "client:build": "yarn --cwd client run build",
-    "build": "yarn run client:build",
     "dev": "cross-env NODE_ENV=development concurrently \"yarn run server\" \"yarn run client\"",
     "restart": "concurrently \"npx kill-port 5000\" \"yarn run dev\""
   },
