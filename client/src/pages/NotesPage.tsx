@@ -19,6 +19,9 @@ const NotesPage = () => {
       await fetchNotes();
     };
     getNotes();
+    return function cleanup() {
+      getNotes();
+    };
   }, [fetchNotes]);
 
   const renderNotes = useCallback((notes: NoteProps[]) => {

@@ -57,6 +57,7 @@ const DotsProgress = () => {
   const text = dots === 0 ? "" : ".".repeat(dots);
   return (
     <span
+      data-testid="dots-loader"
       className={matches ? classes.mobileDots : classes.dots}
     >{`Loading${text}`}</span>
   );
