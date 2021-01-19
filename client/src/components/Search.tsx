@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
 import InputBase from "@material-ui/core/InputBase";
 import {
   createStyles,
@@ -11,6 +12,7 @@ import { debounce, DebouncedFunc } from "lodash";
 import { useNoteAction } from "../hooks";
 import Loader from "./Loader";
 import { LoaderTypes } from "../types";
+import { setFocus } from "../utils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,6 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     inputRoot: {
       color: "inherit",
+      width: "28ch",
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
@@ -51,6 +54,12 @@ const useStyles = makeStyles((theme: Theme) =>
         width: "20ch",
       },
     },
+    clearIcon: {
+      cursor: "pointer",
+      position: "absolute",
+      top: 7,
+      right: 5,
+    },
   })
 );
 
@@ -60,6 +69,8 @@ const Search = () => {
     (query: string) => Promise<void>
   > | null>(null);
   const [prevQuery, setPrevQuery] = useState("");
+  const [query, setQuery] = useState("");
+  const searchInputRef = useRef<HTMLDivElement>(null);
 
   const { searchNotes, fetchNotes, isLoading } = useNoteAction();
 
@@ -74,6 +85,7 @@ const Search = () => {
 
   const handleDebouncedSearch = useCallback(
     ({ target: { value } }) => {
+      setQuery(value);
       const searchFn = debounce(sendQuery, 500);
 
       setPrevSearchFn(() => {
@@ -85,6 +97,13 @@ const Search = () => {
     [sendQuery, prevSearchFn, fetchNotes]
   );
 
+  const clearSearch = useCallback(() => {
+    setFocus(searchInputRef);
+    setPrevQuery("");
+    setQuery("");
+    fetchNotes();
+  }, [fetchNotes]);
+
   return (
     <>
       <div className={classes.search}>
@@ -92,6 +111,7 @@ const Search = () => {
           <SearchIcon />
         </div>
         <InputBase
+          inputRef={searchInputRef}
           placeholder="Search…"
           classes={{
             root: classes.inputRoot,
@@ -99,7 +119,15 @@ const Search = () => {
           }}
           inputProps={{ "aria-label": "search" }}
           onChange={handleDebouncedSearch}
+          value={query}
         />
+        {!!query && (
+          <ClearIcon
+            className={classes.clearIcon}
+            fontSize="small"
+            onClick={clearSearch}
+          />
+        )}
       </div>
       {isLoading && <Loader type={LoaderTypes.dots} />}
     </>
