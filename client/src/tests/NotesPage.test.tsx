@@ -20,14 +20,14 @@ const providerProps = { ...mockStore, notes: mockNotes as any };
 describe("Notes page tests", () => {
   afterEach(cleanup);
 
-  it("shows Loader", function () {
+  it("show Loader", function () {
     render(<NotesPage />);
     expect(screen.getByText("Loading.")).toBeInTheDocument();
     const loader = screen.getByTestId("dots-loader");
     expect(loader).toBeInTheDocument();
   });
 
-  it("shows NoNotesPlaceholder", async function () {
+  it("show NoNotesPlaceholder", async function () {
     render(<NotesPage />);
 
     await waitFor(() => {
