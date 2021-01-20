@@ -110,7 +110,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
         </MenuItem>
       ) : (
         <MenuItem onClick={handleMenuClose}>
-          <LockIcon />
+          <LockIcon data-testid="lock-icon" />
         </MenuItem>
       )}
     </Menu>
@@ -147,6 +147,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
         <Toolbar>
           <div className={classes.logoBlock}>
             <img
+              data-testid="logo-img"
               className={classes.logo}
               src="/logo.png"
               alt="logo"
@@ -161,6 +162,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton
+              data-testid="profile-icon"
               edge="end"
               aria-label="account of current user"
               aria-controls={menuId}

@@ -54,6 +54,7 @@ const NoteMenu = ({ id, title, body }: NoteMenuProps) => {
   return (
     <div className={classes.root}>
       <IconButton
+        data-testid="note-menu-icon"
         size="small"
         aria-label="more"
         aria-controls="menu"

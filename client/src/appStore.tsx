@@ -1,13 +1,8 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { Color } from "@material-ui/lab";
+import { defaultNotificationState } from "./utils";
 
 const storageName = "userData";
-
-const defaultNotificationState = {
-  isOpen: false,
-  message: "",
-  severity: "info" as Color,
-};
 
 export const StoreContext = createContext({
   isReady: false,

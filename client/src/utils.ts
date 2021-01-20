@@ -6,10 +6,17 @@ import {
   SetStateAction,
 } from "react";
 import { NoteProps, NoteState } from "./types";
+import { Color } from "@material-ui/lab";
 
 export const noteDefaultState = {
   title: "",
   body: "",
+};
+
+export const defaultNotificationState = {
+  isOpen: false,
+  message: "",
+  severity: "info" as Color,
 };
 
 export const setFocus = (element: RefObject<HTMLDivElement>) =>
