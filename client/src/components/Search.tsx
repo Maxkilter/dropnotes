@@ -106,7 +106,7 @@ const Search = () => {
 
   return (
     <>
-      <div className={classes.search}>
+      <div className={classes.search} data-testid="search">
         <div className={classes.searchIcon}>
           <SearchIcon />
         </div>
