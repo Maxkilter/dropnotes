@@ -43,10 +43,40 @@
     cursor: pointer;
     color: #80868b;
   }
+  :active {
+    font-weight: 600;
+  }
+}
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chat-button {
+  display: inherit;
+  height: 24px;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 2px 4px;
+  color: #80868b;
+  cursor: pointer;
+
+  img {
+    padding-right: 8px;
+  }
+  &:hover {
+    background-color: #80868b21;
+  }
+  &:active {
+    border: 1px solid;
+    font-weight: 500;
+  }
 }
 
 @media only screen and (max-width: 414px) {
-  .new-note-box{
+  .new-note-box {
     width: 220px;
   }
 }

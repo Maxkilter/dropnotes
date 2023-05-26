@@ -5,7 +5,10 @@ import React, {
   ChangeEvent,
   useEffect,
 } from "react";
+import chatGPTicon from "../images/chatGPT_logo.png";
 import Loader from "./Loader";
+import isEmpty from "lodash/isEmpty";
+import ChatNote from "./ChatNote";
 import { useNoteAction, useOutsideClick } from "../hooks";
 import {
   noteDefaultState,
@@ -20,6 +23,7 @@ import "../styles/NewNoteStyles.scss";
 const NewNote = () => {
   const [isAddingFormExpanded, setIsAddingFormExpanded] = useState(false);
   const [note, setNote] = useState(noteDefaultState);
+  const [isChatNoteOpen, setIsChatNoteOpen] = useState(false);
 
   const shouldCreateNote = note.body.trim() || note.title.trim();
 
@@ -48,21 +52,34 @@ const NewNote = () => {
 
   useOutsideClick(noteRef, () => addNewNote());
 
+  const ChatButton = () => {
+    return (
+      <div className="chat-button" onClick={() => setIsChatNoteOpen(true)}>
+        <img src={chatGPTicon} alt="chat GPT icon" width={22} />
+        <div>Chat Note</div>
+      </div>
+    );
+  };
+
   return (
     <div className="new-note-wrapper">
       <div className="new-note-box" ref={noteRef}>
         {isAddingFormExpanded && !isLoading && (
-          <div
-            id="new-note-title"
-            className="note-title"
-            contentEditable
-            role="textbox"
-            data-placeholder="Title"
-            onInput={(event: ChangeEvent<HTMLDivElement>) =>
-              handleChange(event, note, setNote)
-            }
-            onKeyDown={(e) => handleEnterPress(e, newNoteBodyRef)}
-          />
+          <div className="title-wrapper">
+            <div
+              title="new note title"
+              id="new-note-title"
+              className="note-title"
+              contentEditable
+              role="textbox"
+              data-placeholder="Title"
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, note, setNote)
+              }
+              onKeyDown={(e) => handleEnterPress(e, newNoteBodyRef)}
+            />
+            {isEmpty(note.title) && isEmpty(note.body) && <ChatButton />}
+          </div>
         )}
         {isLoading ? (
           <Loader type={LoaderTypes.linear} />
@@ -90,6 +107,12 @@ const NewNote = () => {
           </div>
         )}
       </div>
+      {isChatNoteOpen && (
+        <ChatNote
+          isOpen={isChatNoteOpen}
+          setIsChatNoteOpen={setIsChatNoteOpen}
+        />
+      )}
     </div>
   );
 };

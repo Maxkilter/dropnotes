@@ -18,8 +18,8 @@ export type NoteMenuProps = Omit<NoteProps, "date" | "_id"> & {
 };
 
 export type EditNoteProps = NoteMenuProps & {
-  isEdit: boolean;
-  setIsEdit: Dispatch<SetStateAction<any>>;
+  isOpen: boolean;
+  setIsSimpleNoteOpen: Dispatch<SetStateAction<any>>;
 };
 
 export interface NotificationProps {

@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import NoteMenu from "./NoteMenu";
 import EditNote from "./EditNote";
+import ChatNote from "./ChatNote";
+import isEmpty from "lodash/isEmpty";
 import { makeStyles } from "@material-ui/core/styles";
 import { NoteProps } from "../types";
 
@@ -36,15 +38,29 @@ const useStyles = makeStyles({
 const Note = ({ note }: { note: NoteProps }) => {
   const { title, body, _id: id } = note;
   const classes = useStyles();
-  const [isEdit, setIsEdit] = useState(false);
+  const [isSimpleNoteOpen, setIsSimpleNoteOpen] = useState(false);
+  const [isChatNoteOpen, setIsChatNoteOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
 
-  const editNote = useCallback(() => setIsEdit(true), []);
+  useEffect(() => {
+    try {
+      const messages = JSON.parse(body);
+      return setChatMessages(messages);
+    } catch (error) {}
+  }, [body]);
+
+  const isChat = !isEmpty(chatMessages);
+
+  const openNote = useCallback(
+    () => (isChat ? setIsChatNoteOpen(true) : setIsSimpleNoteOpen(true)),
+    [isChat]
+  );
 
   return (
     <>
       <Card className={classes.root}>
         <CardActionArea>
-          <CardContent className={classes.content} onClick={editNote}>
+          <CardContent className={classes.content} onClick={openNote}>
             {title && <Typography variant="body1">{title}</Typography>}
             <Typography
               className={classes.noteBody}
@@ -66,13 +82,22 @@ const Note = ({ note }: { note: NoteProps }) => {
           </div>
         </div>
       </Card>
-      {isEdit && (
+      {isSimpleNoteOpen && (
         <EditNote
-          isEdit={isEdit}
-          setIsEdit={setIsEdit}
+          isOpen={isSimpleNoteOpen}
+          setIsSimpleNoteOpen={setIsSimpleNoteOpen}
           id={id}
           title={title}
           body={body}
+        />
+      )}
+      {isChatNoteOpen && (
+        <ChatNote
+          isOpen={isChatNoteOpen}
+          setIsChatNoteOpen={setIsChatNoteOpen}
+          id={id}
+          title={title}
+          body={chatMessages}
         />
       )}
     </>

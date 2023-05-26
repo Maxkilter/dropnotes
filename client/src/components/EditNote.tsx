@@ -1,8 +1,5 @@
 import React, {
   ChangeEvent,
-  forwardRef,
-  ReactElement,
-  Ref,
   useCallback,
   useEffect,
   useRef,
@@ -12,8 +9,8 @@ import React, {
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import Slide, { SlideProps } from "@material-ui/core/Slide";
-import { TransitionProps } from "@material-ui/core/transitions";
+import isEqual from "lodash/isEqual";
+import { TransitionComponent } from "./TransitionComponent";
 import Loader from "./Loader";
 import {
   noteDefaultState,
@@ -26,22 +23,14 @@ import { EditNoteProps, LoaderTypes } from "../types";
 
 import "../styles/EditNoteStyles.scss";
 
-const Transition = forwardRef(
-  (
-    props: TransitionProps & { children?: ReactElement<any, any> },
-    ref: Ref<unknown>
-  ) => {
-    const directions = ["up", "right", "down", "left"];
-    const setDirection = () => {
-      const random = Math.floor(Math.random() * directions.length);
-      return directions[random] as SlideProps["direction"];
-    };
-    return <Slide direction={setDirection()} ref={ref} {...props} />;
-  }
-);
-
 const EditNote = (props: EditNoteProps) => {
-  const { id, title: originTitle, body: originBody, isEdit, setIsEdit } = props;
+  const {
+    id,
+    title: originTitle,
+    body: originBody,
+    isOpen,
+    setIsSimpleNoteOpen,
+  } = props;
 
   const [editNote, setEditNote] = useState(noteDefaultState);
   const [forceUpdate, setForceUpdate] = useState(false);
@@ -65,10 +54,12 @@ const EditNote = (props: EditNoteProps) => {
   }, [id, originTitle, originBody]);
 
   const shouldUpdateNote =
-    editNote.title.trim() !== originTitle?.trim() ||
-    editNote.body.trim() !== originBody.trim();
+    !isEqual(editNote.title.trim(), originTitle) ||
+    !isEqual(editNote.body.trim(), originBody);
 
-  const closeModal = useCallback(() => setIsEdit(false), [setIsEdit]);
+  const closeModal = useCallback(() => setIsSimpleNoteOpen(false), [
+    setIsSimpleNoteOpen,
+  ]);
 
   const modifyNote = useCallback(async () => {
     const { title, body } = editNote;
@@ -90,8 +81,8 @@ const EditNote = (props: EditNoteProps) => {
 
   return (
     <Dialog
-      open={isEdit}
-      TransitionComponent={Transition}
+      open={isOpen}
+      TransitionComponent={TransitionComponent}
       disableEscapeKeyDown
       onClose={modifyNote}
     >
@@ -99,6 +90,7 @@ const EditNote = (props: EditNoteProps) => {
         <div className="edit-note-box">
           <DialogContent>
             <div
+              title="note-title"
               ref={editNoteTitleRef}
               id="edit-note-title"
               className="note-title"
@@ -114,6 +106,7 @@ const EditNote = (props: EditNoteProps) => {
               {originTitle}
             </div>
             <div
+              title="note-body"
               ref={editNoteBodyRef}
               id="edit-note-body"
               className="note-body"
