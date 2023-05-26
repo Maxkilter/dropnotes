@@ -5,7 +5,7 @@ import { createReadStream } from "fs";
 class OpenAI {
   constructor(apiKey) {
     const configuration = new Configuration({
-      apiKey: "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",
+      apiKey: "some key",
     });
     this.openai = new OpenAIApi(configuration);
   }
