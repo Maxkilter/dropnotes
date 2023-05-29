@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import chatGPTicon from "../images/chatGPT_logo.png";
 import Loader from "./Loader";
-import isEmpty from "lodash/isEmpty";
 import ChatNote from "./ChatNote";
 import { useNoteAction, useOutsideClick } from "../hooks";
 import {
@@ -78,26 +77,28 @@ const NewNote = () => {
               }
               onKeyDown={(e) => handleEnterPress(e, newNoteBodyRef)}
             />
-            {isEmpty(note.title) && isEmpty(note.body) && <ChatButton />}
           </div>
         )}
         {isLoading ? (
           <Loader type={LoaderTypes.linear} />
         ) : (
-          <div
-            ref={newNoteBodyRef}
-            id="new-note-body"
-            className="note-body"
-            contentEditable
-            aria-multiline
-            role="textbox"
-            data-placeholder="Add a note..."
-            onInput={(event: ChangeEvent<HTMLDivElement>) =>
-              handleChange(event, note, setNote)
-            }
-            onClick={expandAddingForm}
-            onKeyPress={expandAddingForm}
-          />
+          <div className="new-note-body-wrapper">
+            <div
+              ref={newNoteBodyRef}
+              id="new-note-body"
+              className="note-body"
+              contentEditable
+              aria-multiline
+              role="textbox"
+              data-placeholder="Add a note..."
+              onInput={(event: ChangeEvent<HTMLDivElement>) =>
+                handleChange(event, note, setNote)
+              }
+              onClick={expandAddingForm}
+              onKeyPress={expandAddingForm}
+            />
+            {!isAddingFormExpanded && <ChatButton />}
+          </div>
         )}
         {isAddingFormExpanded && (
           <div className="button-wrapper">

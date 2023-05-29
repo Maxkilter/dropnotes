@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, memo } from "react";
+import React, { useState, memo, useContext } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -15,6 +15,8 @@ import { openai } from "./openai";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isEmpty } from "lodash";
+import { isAssistent } from "./ChatNotePreview";
+import { StoreContext } from "../appStore";
 
 import "../styles/ChatNoteStyles.scss";
 
@@ -29,13 +31,13 @@ const ChatNote = ({
   const [chatTitle, setChatTitle] = useState(originTitle);
   const [messages, setMessages] = useState(body);
   const { createNote, updateNote, fetchNotes, isLoading } = useNoteAction();
+  const { setNotification } = useContext(StoreContext);
 
   const isNewChatNote = isEmpty(id);
   const isAudioQuery = !!query;
-  const isAssistent = (role) => role === openai.roles.ASSISTANT;
 
   const handleSendMessage = async () => {
-    if (query.trim() !== "") {
+    if (!isEmpty(query.trim())) {
       const newMessage = {
         role: openai.roles.USER,
         content: query,
@@ -49,14 +51,23 @@ const ChatNote = ({
           content: newMessage.content,
         },
       ]);
-      setMessages([
-        ...messages,
-        newMessage,
-        {
-          role: openai.roles.ASSISTANT,
-          content: response.content,
-        },
-      ]);
+      if (response) {
+        setMessages([
+          ...messages,
+          newMessage,
+          {
+            role: openai.roles.ASSISTANT,
+            content: response.content,
+          },
+        ]);
+      } else {
+        setNotification({
+          isOpen: true,
+          message: "Something went wrong, please try again later. 🤔",
+          severity: "error",
+        });
+        setIsChatNoteOpen(false);
+      }
     }
   };
 

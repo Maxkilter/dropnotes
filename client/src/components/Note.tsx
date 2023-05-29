@@ -8,6 +8,7 @@ import EditNote from "./EditNote";
 import ChatNote from "./ChatNote";
 import isEmpty from "lodash/isEmpty";
 import { makeStyles } from "@material-ui/core/styles";
+import { ChatNotePreview } from "./ChatNotePreview";
 import { NoteProps } from "../types";
 
 const useStyles = makeStyles({
@@ -19,9 +20,23 @@ const useStyles = makeStyles({
     height: 300,
     overflowY: "scroll",
   },
+  noteTitle: {
+    border: "1px solid #e8e8e8",
+    borderRadius: "4px",
+    marginBottom: "4px",
+    marginTop: "-8px",
+    width: "100%",
+  },
+  noteBodyWrapper: {
+    height: "max-content",
+    width: "100%",
+    border: "1px solid #e8e8e8",
+    borderRadius: "4px",
+  },
   noteBody: {
     whiteSpace: "pre-wrap",
     wordBreak: "break-word",
+    margin: "4px",
   },
   noteBottom: {
     display: "flex",
@@ -61,15 +76,31 @@ const Note = ({ note }: { note: NoteProps }) => {
       <Card className={classes.root}>
         <CardActionArea>
           <CardContent className={classes.content} onClick={openNote}>
-            {title && <Typography variant="body1">{title}</Typography>}
-            <Typography
-              className={classes.noteBody}
-              variant="body2"
-              color="primary"
-              paragraph
-            >
-              {body}
-            </Typography>
+            {isChat ? (
+              <ChatNotePreview messages={chatMessages} title={title} />
+            ) : (
+              <>
+                {title && (
+                  <Typography
+                    className={classes.noteTitle}
+                    variant="body1"
+                    align="center"
+                  >
+                    {title}
+                  </Typography>
+                )}
+                <div className={classes.noteBodyWrapper}>
+                  <Typography
+                    className={classes.noteBody}
+                    variant="body2"
+                    color="primary"
+                    paragraph
+                  >
+                    {body}
+                  </Typography>
+                </div>
+              </>
+            )}
           </CardContent>
         </CardActionArea>
         <div className={classes.noteBottom}>
