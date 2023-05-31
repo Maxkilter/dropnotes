@@ -27,6 +27,9 @@ const useStyles = makeStyles({
     marginTop: "-8px",
     width: "100%",
   },
+  body1: {
+    lineHeight: 1.2,
+  },
   noteBodyWrapper: {
     height: "max-content",
     width: "100%",
@@ -83,6 +86,9 @@ const Note = ({ note }: { note: NoteProps }) => {
                 {title && (
                   <Typography
                     className={classes.noteTitle}
+                    classes={{
+                      body1: classes.body1,
+                    }}
                     variant="body1"
                     align="center"
                   >
