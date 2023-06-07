@@ -53,10 +53,10 @@ const NewNote = () => {
 
   const ChatButton = () => {
     return (
-      <div className="chat-button" onClick={() => setIsChatNoteOpen(true)}>
+      <button className="chat-button" onClick={() => setIsChatNoteOpen(true)}>
         <img src={chatGPTicon} alt="chat GPT icon" width={22} />
         <div>Chat Note</div>
-      </div>
+      </button>
     );
   };
 
@@ -95,7 +95,7 @@ const NewNote = () => {
                 handleChange(event, note, setNote)
               }
               onClick={expandAddingForm}
-              onKeyPress={expandAddingForm}
+              onKeyDown={expandAddingForm}
             />
             {!isAddingFormExpanded && <ChatButton />}
           </div>

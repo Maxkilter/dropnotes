@@ -130,13 +130,13 @@ const EditNote = (props: EditNoteProps) => {
             <Loader type={LoaderTypes.linear} />
           </div>
         )}
-        <div className="edit-note-button" role="button" onClick={closeModal}>
+        <button className="edit-note-button" onClick={closeModal}>
           Close
-        </div>
+        </button>
         {shouldUpdateNote && !isLoading && (
-          <div className="edit-note-button" role="button" onClick={modifyNote}>
+          <button className="edit-note-button" onClick={modifyNote}>
             Update
-          </div>
+          </button>
         )}
       </DialogActions>
     </Dialog>

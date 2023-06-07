@@ -198,9 +198,9 @@ const ChatNote = ({
             <Loader type={LoaderTypes.linear} />
           </div>
         )}
-        <div className="edit-note-button" role="button" onClick={onClose}>
+        <button className="edit-note-button" onClick={onClose}>
           Close
-        </div>
+        </button>
       </DialogActions>
     </Dialog>
   );
