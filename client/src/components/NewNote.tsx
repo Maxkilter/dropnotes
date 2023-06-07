@@ -102,9 +102,9 @@ const NewNote = () => {
         )}
         {isAddingFormExpanded && (
           <div className="button-wrapper">
-            <div role="button" onClick={addNewNote}>
+            <button onClick={addNewNote}>
               {shouldCreateNote ? "Add" : "Close"}
-            </div>
+            </button>
           </div>
         )}
       </div>

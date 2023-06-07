@@ -19,6 +19,7 @@ const useStyles = makeStyles({
   content: {
     height: 300,
     overflowY: "scroll",
+    overflowX: "hidden",
   },
   noteTitle: {
     border: "1px solid #e8e8e8",
@@ -95,16 +96,18 @@ const Note = ({ note }: { note: NoteProps }) => {
                     {title}
                   </Typography>
                 )}
-                <div className={classes.noteBodyWrapper}>
-                  <Typography
-                    className={classes.noteBody}
-                    variant="body2"
-                    color="primary"
-                    paragraph
-                  >
-                    {body}
-                  </Typography>
-                </div>
+                {body && (
+                  <div className={classes.noteBodyWrapper}>
+                    <Typography
+                      className={classes.noteBody}
+                      variant="body2"
+                      color="primary"
+                      paragraph
+                    >
+                      {body}
+                    </Typography>
+                  </div>
+                )}
               </>
             )}
           </CardContent>

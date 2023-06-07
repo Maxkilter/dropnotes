@@ -10,6 +10,8 @@
   border-radius: 8px;
   width: 40%;
   padding: 16px;
+  max-height: 75vh;
+  overflow-y: scroll;
 }
 
 .note-title {
@@ -42,6 +44,8 @@
   :first-child {
     cursor: pointer;
     color: #80868b;
+    border: none;
+    background-color: white;
   }
   :active {
     font-weight: 600;
