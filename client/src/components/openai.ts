@@ -1,21 +1,15 @@
 // @ts-nocheck
 import { Configuration, OpenAIApi } from "openai";
-import { createReadStream } from "fs";
+
+const apiKey = "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";
 
 class OpenAI {
-  constructor(apiKey) {
+  constructor() {
     const configuration = new Configuration({
-      apiKey: "some key",
+      apiKey,
     });
     this.openai = new OpenAIApi(configuration);
   }
-
-  roles = {
-    ASSISTANT: "assistant",
-    USER: "user",
-    SYSTEM: "system",
-  };
-
   async chat(messages) {
     try {
       const response = await this.openai.createChatCompletion({
@@ -25,18 +19,6 @@ class OpenAI {
       return response.data.choices[0].message;
     } catch (e) {
       console.error("Error while chat GPT: ", e.message);
-    }
-  }
-
-  async transcription(filePath) {
-    try {
-      const response = await this.openai.createTranscription(
-        createReadStream(filePath),
-        "whisper-1"
-      );
-      return response.data.text;
-    } catch (e) {
-      console.error("Error while transcription: ", e.message);
     }
   }
 }

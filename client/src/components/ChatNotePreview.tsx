@@ -2,7 +2,6 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
 import { ChatRoles } from "../types";
 
 import "../styles/ChatNotePreviewStyles.scss";
@@ -13,7 +12,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const isAssistent = (role) => role === ChatRoles.assistant;
+export const isAssistant = (role) => role === ChatRoles.assistant;
 
 export const ChatNotePreview = ({ messages, title }) => {
   const classes = useStyles();
@@ -34,7 +33,7 @@ export const ChatNotePreview = ({ messages, title }) => {
             <div
               key={index}
               className={`chat-note-preview-message ${
-                !isAssistent(message.role) ? "bot-message" : ""
+                !isAssistant(message.role) ? "bot-message" : ""
               }`}
             >
               <div>{message.content}</div>
