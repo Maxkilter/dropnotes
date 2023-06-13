@@ -9,9 +9,10 @@ import React, {
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import isEqual from "lodash/isEqual";
-import { TransitionComponent } from "./TransitionComponent";
 import Loader from "./Loader";
+import isEqual from "lodash/isEqual";
+import { makeStyles } from "@material-ui/core/styles";
+import { TransitionComponent } from "./TransitionComponent";
 import {
   noteDefaultState,
   handleChange,
@@ -22,6 +23,12 @@ import { useNoteAction } from "../hooks";
 import { EditNoteProps, LoaderTypes } from "../types";
 
 import "../styles/EditNoteStyles.scss";
+
+const useStyles = makeStyles({
+  paper: {
+    width: "100%",
+  },
+});
 
 const EditNote = (props: EditNoteProps) => {
   const {
@@ -37,6 +44,7 @@ const EditNote = (props: EditNoteProps) => {
   const editNoteTitleRef = useRef<HTMLDivElement>(null);
   const editNoteBodyRef = useRef<HTMLDivElement>(null);
   const { updateNote, fetchNotes, isLoading } = useNoteAction();
+  const classes = useStyles();
 
   useEffect(() => {
     setCursorToEnd(editNoteTitleRef);
@@ -81,6 +89,7 @@ const EditNote = (props: EditNoteProps) => {
 
   return (
     <Dialog
+      classes={{ paper: classes.paper }}
       open={isOpen}
       TransitionComponent={TransitionComponent}
       disableEscapeKeyDown

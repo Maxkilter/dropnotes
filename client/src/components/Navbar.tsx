@@ -41,11 +41,12 @@ const useStyles = makeStyles((theme: Theme) =>
     sectionDesktop: {
       display: "none",
       [theme.breakpoints.up("md")]: {
-        display: "flex",
+        display: "block",
       },
     },
     sectionMobile: {
-      display: "flex",
+      display: "block",
+      marginRight: "-12px",
       [theme.breakpoints.up("md")]: {
         display: "none",
       },

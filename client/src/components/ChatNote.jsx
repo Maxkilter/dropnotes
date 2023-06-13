@@ -1,5 +1,4 @@
-// @ts-nocheck
-import React, { useState, memo, useContext } from "react";
+import React, { memo, useContext, useState } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -7,22 +6,25 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import SendIcon from "@material-ui/icons/Send";
+import MicIcon from "@material-ui/icons/Mic";
 import Loader from "./Loader";
 import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
-import { openai } from "./openai";
+import { chatRoles, openai } from "./openai";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isEmpty } from "lodash";
-import { isAssistant } from "./ChatNotePreview";
 import { StoreContext } from "../appStore";
 import LanguageDetect from "languagedetect";
-import { ChatRoles } from "../types";
+import MicRecorder from "mic-recorder-to-mp3";
 
 import "../styles/ChatNoteStyles.scss";
 
 const defaultChatTitle = "New Chat Note";
 const lngDetector = new LanguageDetect();
+const recorder = new MicRecorder({
+  bitRate: 128,
+});
 
 const useStyles = makeStyles({
   chatTitleInput: {
@@ -36,6 +38,9 @@ const useStyles = makeStyles({
   },
   actionsRoot: {
     padding: "8px 16px",
+  },
+  paper: {
+    width: "100%",
   },
 });
 
@@ -55,14 +60,14 @@ const ChatNote = ({
   const [chatTitle, setChatTitle] = useState(originTitle);
   const [messages, setMessages] = useState(body);
   const [isChatRequestProcessing, setIsChatRequestProcessing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const { createNote, updateNote, fetchNotes, isLoading } = useNoteAction();
   const { setNotification } = useContext(StoreContext);
-
   const classes = useStyles();
-
   const isNewChatNote = isEmpty(id);
+  const isAudioQuery = isEmpty(query);
 
-  const handleSendMessage = async (shouldCreateTitle) => {
+  const handleSendRequest = async (shouldCreateTitle, voiceQuery) => {
     let response;
     let newMessage;
 
@@ -71,17 +76,17 @@ const ChatNote = ({
       response = await openai.chat([
         ...messages,
         {
-          role: ChatRoles.user,
+          role: chatRoles.USER,
           content: createChatTitleRequest(messages),
         },
       ]);
       !!response && setIsChatRequestProcessing(false);
     }
 
-    if (!isEmpty(query.trim())) {
+    if (!isEmpty(voiceQuery) || !isEmpty(query.trim())) {
       newMessage = {
-        role: ChatRoles.user,
-        content: query,
+        role: chatRoles.USER,
+        content: voiceQuery ? voiceQuery : query,
       };
       setMessages([...messages, newMessage]);
       setQuery("");
@@ -89,7 +94,7 @@ const ChatNote = ({
       response = await openai.chat([
         ...messages,
         {
-          role: ChatRoles.user,
+          role: chatRoles.USER,
           content: newMessage.content,
         },
       ]);
@@ -103,7 +108,7 @@ const ChatNote = ({
             ...messages,
             newMessage,
             {
-              role: ChatRoles.assistant,
+              role: chatRoles.ASSISTANT,
               content: response.content,
             },
           ]);
@@ -117,6 +122,32 @@ const ChatNote = ({
     }
   };
 
+  const startRecording = () => {
+    recorder.start();
+    setIsRecording(true);
+  };
+
+  const stopRecording = async () => {
+    setIsRecording(false);
+    try {
+      const [buffer, blob] = await recorder.stop().getMp3();
+      const audioFile = new File(buffer, `${Date.now()}.mp3`, {
+        type: blob.type,
+        lastModified: Date.now(),
+      });
+      if (audioFile) {
+        setIsChatRequestProcessing(true);
+        const voiceQuery = await openai.transcription(audioFile);
+        if (voiceQuery) {
+          await handleSendRequest(false, voiceQuery);
+          setIsChatRequestProcessing(false);
+        }
+      }
+    } catch (e) {
+      console.error("Error while recording: ", e.message);
+    }
+  };
+
   const shouldUpdateChatNote =
     !isEqual(chatTitle.trim(), originTitle) || !isEqual(messages, body);
 
@@ -125,7 +156,7 @@ const ChatNote = ({
 
     if (shouldUpdateChatNote) {
       if (isNewChatNote) {
-        const title = await handleSendMessage(true);
+        const title = await handleSendRequest(true);
         // AI generate title wrapped in quotes
         const formattedTitle = title?.replace(/"/g, "");
         const newNote = await createNote(formattedTitle, body);
@@ -140,7 +171,11 @@ const ChatNote = ({
   };
 
   return (
-    <Dialog open={isOpen} TransitionComponent={TransitionComponent}>
+    <Dialog
+      open={isOpen}
+      TransitionComponent={TransitionComponent}
+      classes={{ paper: classes.paper }}
+    >
       <DialogContent dividers>
         <div className="chat-wrapper">
           <div className="chat-header">
@@ -159,9 +194,11 @@ const ChatNote = ({
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`message ${
-                    !isAssistant(message.role) ? "bot-message" : ""
-                  }`}
+                  className={
+                    message.role !== chatRoles.ASSISTANT
+                      ? "message bot-message"
+                      : "message"
+                  }
                 >
                   {message.content}
                 </div>
@@ -169,6 +206,7 @@ const ChatNote = ({
             </div>
             <div className="input-container">
               <TextField
+                disabled={isRecording || isChatRequestProcessing}
                 autoFocus
                 placeholder="Type your message here..."
                 variant="outlined"
@@ -179,14 +217,22 @@ const ChatNote = ({
                 fullWidth
                 size="small"
               />
-              <div className="send-query-btn">
-                <IconButton
-                  color="inherit"
-                  disabled={isEmpty(query)}
-                  onClick={() => handleSendMessage(false)}
-                >
-                  <SendIcon classes={{ root: classes.iconRoot }} />
-                </IconButton>
+              <div className="send-query-btn-wrapper">
+                {!isAudioQuery && (
+                  <IconButton onClick={() => handleSendRequest(false)}>
+                    <SendIcon classes={{ root: classes.iconRoot }} />
+                  </IconButton>
+                )}
+                {isAudioQuery &&
+                  (isRecording ? (
+                    <IconButton onClick={stopRecording}>
+                      <div className="stop-recording-btn" />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={startRecording}>
+                      <MicIcon classes={{ root: classes.iconRoot }} />
+                    </IconButton>
+                  ))}
               </div>
             </div>
           </div>

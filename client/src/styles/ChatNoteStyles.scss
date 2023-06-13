@@ -1,7 +1,6 @@
 .chat-wrapper {
-  height: 75vh;
-  width: 31vw;
-  min-width: 300px;
+  height: 60vh;
+  width: 100%;
 }
 
 .chat-header {
@@ -38,7 +37,6 @@
   padding: 32px 8px;
 
   .message {
-    text-align: justify;
     background-color: white;
     border-radius: 8px;
     padding: 12px;
@@ -60,7 +58,7 @@
   padding-top: 4px;
   background-color: white;
 
-  .send-query-btn {
+  .send-query-btn-wrapper {
     border-radius: 50%;
     margin-left: 16px;
     background-color: #3f51b5;
@@ -70,4 +68,34 @@
 .chat-note-title {
   margin: 0 24px;
   width: inherit;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.stop-recording-btn {
+  animation: pulse 0.8s infinite;
+  background-color: white;
+  border: 1px solid red;
+  border-radius: 50%;
+  margin: 2px;
+  height: 12px;
+  width: 12px;
+  &:hover {
+    height: 14px;
+    width: 14px;
+    animation: none;
+    border-radius: initial;
+    border: none;
+    background-color: white;
+  }
 }
