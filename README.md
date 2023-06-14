@@ -1,6 +1,6 @@
 # Dropnotes
 
-📑 Service allows to create, handle, and store notes.
+📑 The service allows you to create, handle and store text notes, as well as notes in the form of a chat with artificial intelligence.
 
 #### START Instructions:
 
