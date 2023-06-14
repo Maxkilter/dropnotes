@@ -1,0 +1,73 @@
+.chat-wrapper {
+  height: 75vh;
+  width: 31vw;
+  min-width: 300px;
+}
+
+.chat-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  text-align: center;
+  width: 100%;
+
+  .chat-gpt-icon {
+    padding-right: 16px;
+  }
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  height: 102%;
+  width: 100%;
+  background-color: #f2f2f2;
+}
+
+.messages-container {
+  overflow-y: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 32px 8px;
+
+  .message {
+    text-align: justify;
+    background-color: white;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    align-self: flex-start;
+    max-width: 85%;
+  }
+
+  .bot-message {
+    align-self: flex-end;
+    background-color: #dcf8c6;
+  }
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  padding-top: 4px;
+  background-color: white;
+
+  .send-query-btn {
+    border-radius: 50%;
+    margin-left: 16px;
+    background-color: #3f51b5;
+  }
+}
+
+.chat-note-title {
+  margin: 0 24px;
+  width: inherit;
+}

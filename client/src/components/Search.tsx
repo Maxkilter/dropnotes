@@ -4,7 +4,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import InputBase from "@material-ui/core/InputBase";
 import {
   createStyles,
-  fade,
+  alpha,
   makeStyles,
   Theme,
 } from "@material-ui/core/styles";
@@ -19,9 +19,9 @@ const useStyles = makeStyles((theme: Theme) =>
     search: {
       position: "relative",
       borderRadius: theme.shape.borderRadius,
-      backgroundColor: fade(theme.palette.common.white, 0.15),
+      backgroundColor: alpha(theme.palette.common.white, 0.15),
       "&:hover": {
-        backgroundColor: fade(theme.palette.common.white, 0.25),
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
       },
       marginRight: theme.spacing(2),
       marginLeft: theme.spacing(1),

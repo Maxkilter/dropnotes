@@ -34,7 +34,7 @@ export const useRequest = () => {
         setIsLoading(false);
 
         return data;
-      } catch (e) {
+      } catch (e: any) {
         setIsLoading(false);
         setError(e.message);
         throw e.message;

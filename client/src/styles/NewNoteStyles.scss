@@ -10,6 +10,8 @@
   border-radius: 8px;
   width: 40%;
   padding: 16px;
+  max-height: 75vh;
+  overflow-y: scroll;
 }
 
 .note-title {
@@ -42,11 +44,43 @@
   :first-child {
     cursor: pointer;
     color: #80868b;
+    border: none;
+    background-color: white;
+  }
+  :active {
+    font-weight: 600;
+  }
+}
+
+.new-note-body-wrapper {
+  display: flex;
+  justify-content: space-between;
+
+  .chat-button {
+    display: inherit;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 2px 4px;
+    color: #80868b;
+    cursor: pointer;
+    background-color: white;
+
+    img {
+      padding-right: 8px;
+    }
+    &:hover {
+      background-color: #80868b21;
+    }
+    &:active {
+      border: 1px solid;
+      font-weight: 500;
+    }
   }
 }
 
 @media only screen and (max-width: 414px) {
-  .new-note-box{
+  .new-note-box {
     width: 220px;
   }
 }
