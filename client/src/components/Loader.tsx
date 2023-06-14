@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const DotsProgress = () => {
+export const DotsProgress = ({ text }: { text: string }) => {
   const [dots, setDots] = useState(1);
   const classes = useStyles();
   const matches = useMediaQuery("(max-width:415px)");
@@ -54,12 +54,12 @@ const DotsProgress = () => {
     };
   }, [dots, setDots]);
 
-  const text = dots === 0 ? "" : ".".repeat(dots);
+  const movingDots = dots === 0 ? "" : ".".repeat(dots);
   return (
     <span
       data-testid="dots-loader"
       className={matches ? classes.mobileDots : classes.dots}
-    >{`Loading${text}`}</span>
+    >{`${text}${movingDots}`}</span>
   );
 };
 
@@ -92,7 +92,7 @@ const Loader = ({ type }: LoaderProps) => {
     );
   }
 
-  return <DotsProgress />;
+  return <DotsProgress text="Loading" />;
 };
 
 export default Loader;

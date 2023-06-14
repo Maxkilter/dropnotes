@@ -43,9 +43,3 @@ export interface LoaderProps {
 export interface NavbarProps {
   isAuthenticated: boolean;
 }
-
-export enum ChatRoles {
-  assistant = "assistant",
-  user = "user",
-  system = "system",
-}

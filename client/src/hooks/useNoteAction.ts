@@ -33,7 +33,10 @@ export const useNoteAction = () => {
         setIsNoMatching(false);
         setNotes(notes);
       }
-    } catch (e) {}
+    } catch (e) {
+      if (e instanceof Error)
+        console.error("Error while fetching notes ", e.message);
+    }
   }, [headers, request, setNotes, setIsNoMatching]);
 
   const searchNotes = useCallback(
@@ -49,7 +52,10 @@ export const useNoteAction = () => {
           isNoNotes(notes) ? setIsNoMatching(true) : setIsNoMatching(false);
           setNotes(notes);
         }
-      } catch (e) {}
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while searching notes ", e.message);
+      }
     },
     [headers, request, setNotes, setIsNoMatching]
   );
@@ -63,7 +69,10 @@ export const useNoteAction = () => {
           { title, body },
           headers
         );
-      } catch (e) {}
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while creating note ", e.message);
+      }
     },
     [headers, request]
   );
@@ -77,7 +86,10 @@ export const useNoteAction = () => {
           { title, body },
           headers
         );
-      } catch (e) {}
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while updating note ", e.message);
+      }
     },
     [headers, request]
   );
@@ -86,7 +98,10 @@ export const useNoteAction = () => {
     async (id: string) => {
       try {
         return await request(`api/notes/${id}`, "DELETE", null, headers);
-      } catch (e) {}
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while deleting note ", e.message);
+      }
     },
     [headers, request]
   );

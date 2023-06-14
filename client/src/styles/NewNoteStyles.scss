@@ -8,7 +8,7 @@
 .new-note-box {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  width: 40%;
+  width: 40vw;
   padding: 16px;
   max-height: 75vh;
   overflow-y: scroll;
@@ -55,6 +55,7 @@
 .new-note-body-wrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 
   .chat-button {
     display: inherit;
@@ -81,6 +82,12 @@
 
 @media only screen and (max-width: 414px) {
   .new-note-box {
-    width: 220px;
+    width: 65vw;
+  }
+}
+
+@media only screen and (max-width: 915px) and (orientation: landscape){
+  .new-note-box {
+    width: 60vw;
   }
 }
