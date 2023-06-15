@@ -1,4 +1,4 @@
-import React, { memo, useContext, useState } from "react";
+import React, { memo, useContext, useState, useEffect, useRef } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -7,6 +7,9 @@ import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import SendIcon from "@material-ui/icons/Send";
 import MicIcon from "@material-ui/icons/Mic";
+import { VolumeUp } from "@material-ui/icons";
+import { VolumeOff } from "@material-ui/icons";
+import Tooltip from "@material-ui/core/Tooltip";
 import Loader from "./Loader";
 import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
@@ -17,6 +20,7 @@ import { isEmpty } from "lodash";
 import { StoreContext } from "../appStore";
 import LanguageDetect from "languagedetect";
 import MicRecorder from "mic-recorder-to-mp3";
+import { textToSpeechConverter } from "../textToSpeechConverter.js";
 
 import "../styles/ChatNoteStyles.scss";
 
@@ -44,10 +48,12 @@ const useStyles = makeStyles({
   },
 });
 
+const defineLanguage = (message) => lngDetector.detect(message, 1)[0][0];
+
 const createChatTitleRequest = (messages) =>
-  `Create the title of this chat in ${
-    lngDetector.detect(messages[messages.length - 1].content, 1)[0][0]
-  } language. The title should indicate what was discussed in the chat.`;
+  `Create the title of this chat in ${defineLanguage(
+    messages[messages.length - 1].content
+  )} language. The title should indicate what was discussed in the chat.`;
 
 const ChatNote = ({
   isOpen,
@@ -61,11 +67,46 @@ const ChatNote = ({
   const [messages, setMessages] = useState(body);
   const [isChatRequestProcessing, setIsChatRequestProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
+    localStorage.getItem("isMessageAutoPlay") === "true"
+  );
+  const audioPlayerRef = useRef(null);
+
+  useEffect(() => {
+    const isAutoPlay = localStorage.getItem("isMessageAutoPlay");
+    if (isAutoPlay) {
+      setIsMessageAutoPlay(isAutoPlay === "true");
+    }
+  }, []);
+
   const { createNote, updateNote, fetchNotes, isLoading } = useNoteAction();
   const { setNotification } = useContext(StoreContext);
   const classes = useStyles();
   const isNewChatNote = isEmpty(id);
-  const isAudioQuery = isEmpty(query);
+
+  const createVoiceMessage = async (text) => {
+    const voiceParameters = textToSpeechConverter.getVoiceParameters(
+      defineLanguage(text)
+    );
+    if (voiceParameters) {
+      const audio = await textToSpeechConverter.textToSpeech(
+        text,
+        voiceParameters
+      );
+      const blob = new Blob([audio], { type: "audio/mp3" });
+      const url = URL.createObjectURL(blob);
+      if (url && audioPlayerRef.current) {
+        audioPlayerRef.current.src = url;
+        if (isMessageAutoPlay) audioPlayerRef.current.play();
+      }
+    }
+  };
+
+  const toggleMessageAutoPlay = () => {
+    const updatedValue = !isMessageAutoPlay;
+    setIsMessageAutoPlay(updatedValue);
+    localStorage.setItem("isMessageAutoPlay", updatedValue.toString());
+  };
 
   const handleSendRequest = async (shouldCreateTitle, voiceQuery) => {
     let response;
@@ -104,14 +145,17 @@ const ChatNote = ({
     if (response) {
       return shouldCreateTitle
         ? response.content
-        : setMessages([
-            ...messages,
-            newMessage,
-            {
-              role: chatRoles.ASSISTANT,
-              content: response.content,
-            },
-          ]);
+        : (() => {
+            setMessages([
+              ...messages,
+              newMessage,
+              {
+                role: chatRoles.ASSISTANT,
+                content: response.content,
+              },
+            ]);
+            createVoiceMessage(response.content);
+          })();
     } else {
       setNotification({
         isOpen: true,
@@ -195,9 +239,9 @@ const ChatNote = ({
                 <div
                   key={index}
                   className={
-                    message.role !== chatRoles.ASSISTANT
-                      ? "message bot-message"
-                      : "message"
+                    message.role === chatRoles.USER
+                      ? "message"
+                      : "message bot-message"
                   }
                 >
                   {message.content}
@@ -206,7 +250,7 @@ const ChatNote = ({
             </div>
             <div className="input-container">
               <TextField
-                disabled={isRecording || isChatRequestProcessing}
+                disabled={isLoading || isRecording || isChatRequestProcessing}
                 autoFocus
                 placeholder="Type your message here..."
                 variant="outlined"
@@ -218,12 +262,12 @@ const ChatNote = ({
                 size="small"
               />
               <div className="send-query-btn-wrapper">
-                {!isAudioQuery && (
+                {!isEmpty(query) && (
                   <IconButton onClick={() => handleSendRequest(false)}>
                     <SendIcon classes={{ root: classes.iconRoot }} />
                   </IconButton>
                 )}
-                {isAudioQuery &&
+                {isEmpty(query) &&
                   (isRecording ? (
                     <IconButton onClick={stopRecording}>
                       <div className="stop-recording-btn" />
@@ -239,9 +283,29 @@ const ChatNote = ({
         </div>
       </DialogContent>
       <DialogActions classes={{ root: classes.actionsRoot }}>
-        {(isLoading || isChatRequestProcessing) && (
+        {isLoading || isChatRequestProcessing ? (
           <div className="loader-wrapper">
             <Loader type={LoaderTypes.linear} />
+          </div>
+        ) : (
+          <div className="audio-player-wrapper">
+            <Tooltip
+              title={`Message Autoplay ${
+                isMessageAutoPlay ? "Enabled" : "Disabled"
+              }`}
+              placement="top-start"
+              arrow
+            >
+              <IconButton onClick={toggleMessageAutoPlay} size="small">
+                {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
+              </IconButton>
+            </Tooltip>
+            <audio
+              ref={audioPlayerRef}
+              style={{ width: "100%", height: "18px", marginLeft: "8px" }}
+              controls
+              src=""
+            />
           </div>
         )}
         <button className="edit-note-button" onClick={onClose}>

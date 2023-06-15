@@ -15,10 +15,6 @@
   font-size: 0.8rem;
   text-align: center;
   width: 100%;
-
-  .chat-gpt-icon {
-    padding-right: 16px;
-  }
 }
 
 .chat-body {
@@ -37,7 +33,7 @@
   padding: 32px 8px;
 
   .message {
-    background-color: white;
+    background-color: #dcf8c6;
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 8px;
@@ -47,7 +43,7 @@
 
   .bot-message {
     align-self: flex-end;
-    background-color: #dcf8c6;
+    background-color: white;
   }
 }
 
@@ -98,4 +94,10 @@
     border: none;
     background-color: white;
   }
+}
+
+.audio-player-wrapper {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
 }
