@@ -30,9 +30,9 @@ export const ChatNotePreview = ({ messages, title }) => {
             <div
               key={index}
               className={
-                message.role !== chatRoles.ASSISTANT
-                  ? "chat-note-preview-message bot-message"
-                  : "chat-note-preview-message"
+                message.role === chatRoles.USER
+                  ? "chat-note-preview-message"
+                  : "chat-note-preview-message bot-message"
               }
             >
               <div>{message.content}</div>
