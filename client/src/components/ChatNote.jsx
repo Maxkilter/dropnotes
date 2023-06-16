@@ -13,7 +13,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Loader from "./Loader";
 import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
-import { chatRoles, openai } from "./openai";
+import { chatRoles, openai } from "../openai.js";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isEmpty } from "lodash";

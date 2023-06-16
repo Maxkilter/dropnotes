@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import axios from "axios";
-import speechKey from "./speech-key.json";
+
+const client_email = "";
+const private_key = "";
 
 const languages = {
   english: {
@@ -56,13 +58,13 @@ class TextToSpeechConverter {
   async getToken() {
     const token = jwt.sign(
       {
-        iss: speechKey.client_email,
+        iss: client_email,
         scope: "https://www.googleapis.com/auth/cloud-platform",
         aud: "https://www.googleapis.com/oauth2/v4/token",
         exp: Math.floor(Date.now() / 1000) + 60 * 60,
         iat: Math.floor(Date.now() / 1000),
       },
-      speechKey.private_key,
+      private_key,
       { algorithm: "RS256" }
     );
 
