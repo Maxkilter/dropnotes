@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
+import keys from "./keys.json";
 
-const apiKey = "";
+const apiKey = keys.openaiKey;
 
 class CustomFormData extends FormData {
   getHeaders() {

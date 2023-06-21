@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import keys from "./keys.json";
 
-const client_email = "";
-const private_key = "";
+const client_email = keys.client_email;
+const private_key = keys.private_key;
 
 const languages = {
   english: {
