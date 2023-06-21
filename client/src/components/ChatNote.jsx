@@ -1,4 +1,4 @@
-import React, { memo, useContext, useState, useEffect, useRef } from "react";
+import React, { memo, useContext, useState, useEffect } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -13,7 +13,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Loader from "./Loader";
 import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
-import { chatRoles, openai } from "./openai";
+import { chatRoles, openai } from "../openai.js";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isEmpty } from "lodash";
@@ -67,10 +67,10 @@ const ChatNote = ({
   const [messages, setMessages] = useState(body);
   const [isChatRequestProcessing, setIsChatRequestProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [audioUrl, setAudioUrl] = useState(null);
   const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
     localStorage.getItem("isMessageAutoPlay") === "true"
   );
-  const audioPlayerRef = useRef(null);
 
   useEffect(() => {
     const isAutoPlay = localStorage.getItem("isMessageAutoPlay");
@@ -95,10 +95,7 @@ const ChatNote = ({
       );
       const blob = new Blob([audio], { type: "audio/mp3" });
       const url = URL.createObjectURL(blob);
-      if (url && audioPlayerRef.current) {
-        audioPlayerRef.current.src = url;
-        if (isMessageAutoPlay) audioPlayerRef.current.play();
-      }
+      if (url) setAudioUrl(url);
     }
   };
 
@@ -167,8 +164,52 @@ const ChatNote = ({
   };
 
   const startRecording = () => {
-    recorder.start();
-    setIsRecording(true);
+    if ("permissions" in navigator) {
+      navigator.permissions
+        .query({ name: "microphone" })
+        .then(function (permissionStatus) {
+          if (permissionStatus.state === "granted") {
+            recorder.start();
+            setIsRecording(true);
+          } else if (permissionStatus.state === "prompt") {
+            requestMicrophonePermission();
+          } else {
+            console.error("Microphone access denied or unavailable.");
+          }
+
+          permissionStatus.addEventListener("change", function () {
+            console.log(
+              "Microphone permission status changed to:",
+              permissionStatus.state
+            );
+
+            if (permissionStatus.state === "granted") {
+              recorder.start();
+              setIsRecording(true);
+            } else if (permissionStatus.state === "prompt") {
+              requestMicrophonePermission();
+            } else {
+              console.error("Microphone access denied or unavailable.");
+            }
+          });
+        })
+        .catch(function (error) {
+          console.error("Error checking microphone permission:", error);
+        });
+    } else {
+      console.error("Permissions API is not supported in this browser.");
+    }
+  };
+
+  const requestMicrophonePermission = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(function () {
+        startRecording();
+      })
+      .catch(function (error) {
+        console.error("Error accessing microphone:", error);
+      });
   };
 
   const stopRecording = async () => {
@@ -288,25 +329,27 @@ const ChatNote = ({
             <Loader type={LoaderTypes.linear} />
           </div>
         ) : (
-          <div className="audio-player-wrapper">
-            <Tooltip
-              title={`Message Autoplay ${
-                isMessageAutoPlay ? "Enabled" : "Disabled"
-              }`}
-              placement="top-start"
-              arrow
-            >
-              <IconButton onClick={toggleMessageAutoPlay} size="small">
-                {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
-              </IconButton>
-            </Tooltip>
-            <audio
-              ref={audioPlayerRef}
-              style={{ width: "100%", height: "18px", marginLeft: "8px" }}
-              controls
-              src=""
-            />
-          </div>
+          audioUrl && (
+            <div className="audio-player-wrapper">
+              <Tooltip
+                title={`Message Autoplay ${
+                  isMessageAutoPlay ? "Enabled" : "Disabled"
+                }`}
+                placement="top-start"
+                arrow
+              >
+                <IconButton onClick={toggleMessageAutoPlay} size="small">
+                  {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
+                </IconButton>
+              </Tooltip>
+              <audio
+                style={{ width: "100%", height: "18px", marginLeft: "8px" }}
+                controls
+                src={audioUrl}
+                autoPlay={isMessageAutoPlay}
+              />
+            </div>
+          )
         )}
         <button className="edit-note-button" onClick={onClose}>
           Close
