@@ -1,4 +1,4 @@
-import React, { memo, useContext, useState, useEffect } from "react";
+import React, { memo, useContext, useState, useEffect, useRef } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -48,11 +48,14 @@ const useStyles = makeStyles({
   },
 });
 
-const defineLanguage = (message) => lngDetector.detect(message, 1)[0][0];
+const defineLanguage = (message) => {
+  const detectResults = lngDetector.detect(message, 1);
+  return detectResults[0] ? detectResults[0][0] : "english";
+};
 
-const createChatTitleRequest = (messages) =>
+const createChatTitleRequest = (message) =>
   `Create the title of this chat in ${defineLanguage(
-    messages[messages.length - 1].content
+    message
   )} language. The title should indicate what was discussed in the chat.`;
 
 const ChatNote = ({
@@ -67,10 +70,11 @@ const ChatNote = ({
   const [messages, setMessages] = useState(body);
   const [isChatRequestProcessing, setIsChatRequestProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
+  const [isPlayerDisplayed, setIsPlayerDisplayed] = useState(false);
   const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
     localStorage.getItem("isMessageAutoPlay") === "true"
   );
+  const audioPlayerRef = useRef(null);
 
   useEffect(() => {
     const isAutoPlay = localStorage.getItem("isMessageAutoPlay");
@@ -95,7 +99,11 @@ const ChatNote = ({
       );
       const blob = new Blob([audio], { type: "audio/mp3" });
       const url = URL.createObjectURL(blob);
-      if (url) setAudioUrl(url);
+      if (url) {
+        setIsPlayerDisplayed(true);
+        if (audioPlayerRef.current) audioPlayerRef.current.src = url;
+        if (isMessageAutoPlay) audioPlayerRef.current.play();
+      }
     }
   };
 
@@ -115,7 +123,9 @@ const ChatNote = ({
         ...messages,
         {
           role: chatRoles.USER,
-          content: createChatTitleRequest(messages),
+          content: createChatTitleRequest(
+            messages[messages.length - 1].content
+          ),
         },
       ]);
       !!response && setIsChatRequestProcessing(false);
@@ -174,7 +184,11 @@ const ChatNote = ({
           } else if (permissionStatus.state === "prompt") {
             requestMicrophonePermission();
           } else {
-            console.error("Microphone access denied or unavailable.");
+            setNotification({
+              isOpen: true,
+              message: "Microphone access denied or unavailable.",
+              severity: "error",
+            });
           }
 
           permissionStatus.addEventListener("change", function () {
@@ -189,7 +203,11 @@ const ChatNote = ({
             } else if (permissionStatus.state === "prompt") {
               requestMicrophonePermission();
             } else {
-              console.error("Microphone access denied or unavailable.");
+              setNotification({
+                isOpen: true,
+                message: "Microphone access denied or unavailable.",
+                severity: "error",
+              });
             }
           });
         })
@@ -329,7 +347,7 @@ const ChatNote = ({
             <Loader type={LoaderTypes.linear} />
           </div>
         ) : (
-          audioUrl && (
+          isPlayerDisplayed && (
             <div className="audio-player-wrapper">
               <Tooltip
                 title={`Message Autoplay ${
@@ -345,8 +363,8 @@ const ChatNote = ({
               <audio
                 style={{ width: "100%", height: "18px", marginLeft: "8px" }}
                 controls
-                src={audioUrl}
-                autoPlay={isMessageAutoPlay}
+                src={null}
+                ref={audioPlayerRef}
               />
             </div>
           )
