@@ -347,27 +347,26 @@ const ChatNote = ({
             <Loader type={LoaderTypes.linear} />
           </div>
         ) : (
-          isPlayerDisplayed && (
-            <div className="audio-player-wrapper">
-              <Tooltip
-                title={`Message Autoplay ${
-                  isMessageAutoPlay ? "Enabled" : "Disabled"
-                }`}
-                placement="top-start"
-                arrow
-              >
-                <IconButton onClick={toggleMessageAutoPlay} size="small">
-                  {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
-                </IconButton>
-              </Tooltip>
-              <audio
-                style={{ width: "100%", height: "18px", marginLeft: "8px" }}
-                controls
-                src={null}
-                ref={audioPlayerRef}
-              />
-            </div>
-          )
+          <div
+            className={`audio-player-wrapper ${isPlayerDisplayed && "active"}`}
+          >
+            <Tooltip
+              title={`Message Autoplay ${
+                isMessageAutoPlay ? "Enabled" : "Disabled"
+              }`}
+              placement="top-start"
+              arrow
+            >
+              <IconButton onClick={toggleMessageAutoPlay} size="small">
+                {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
+              </IconButton>
+            </Tooltip>
+            <audio
+              style={{ width: "100%", height: "18px", marginLeft: "8px" }}
+              controls
+              ref={audioPlayerRef}
+            />
+          </div>
         )}
         <button className="edit-note-button" onClick={onClose}>
           Close
