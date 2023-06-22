@@ -54,7 +54,7 @@ const languages = {
 
 class TextToSpeechConverter {
   getVoiceParameters(lang) {
-    return languages[lang];
+    return languages[lang] || languages["english"];
   }
   async getToken() {
     const token = jwt.sign(
