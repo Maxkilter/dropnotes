@@ -86,7 +86,12 @@ const SignInPage = () => {
       const error = validate({ email: form.email });
       if (isNoFormErrors(error)) {
         try {
-          const data = await request("/api/auth/login", "POST", { ...form });
+          const data = await request(
+            "/api/auth/login",
+            "POST",
+            JSON.stringify({ ...form }),
+            { "Content-type": "application/json" }
+          );
           logIn(data.token, data.userId);
         } catch (e) {}
       } else {

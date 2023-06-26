@@ -10,16 +10,10 @@ export const useRequest = () => {
     async (url, method, body, headers = {}) => {
       setIsLoading(true);
 
-      let formattedBody;
-
       try {
-        if (body) {
-          formattedBody = JSON.stringify(body);
-          headers["Content-type"] = "application/json";
-        }
         const response = await fetch(url, {
           method,
-          body: formattedBody,
+          body,
           headers,
         });
         const data = await response.json();

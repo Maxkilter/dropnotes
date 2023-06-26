@@ -92,9 +92,14 @@ const SignUpPage = () => {
       const errors = validate({ email: form.email, password: form.password });
       if (isNoFormErrors(errors)) {
         try {
-          const signUpData = await request("/api/auth/register", "POST", {
-            ...form,
-          });
+          const signUpData = await request(
+            "/api/auth/register",
+            "POST",
+            JSON.stringify({
+              ...form,
+            }),
+            { "Content-type": "application/json" }
+          );
 
           setNotification({
             isOpen: true,
@@ -102,12 +107,17 @@ const SignUpPage = () => {
             severity: "success",
           });
 
-          const signIndData = await request("/api/auth/login", "POST", {
-            email: form.email,
-            password: form.password,
-          });
+          const signInData = await request(
+            "/api/auth/login",
+            "POST",
+            JSON.stringify({
+              email: form.email,
+              password: form.password,
+            }),
+            { "Content-type": "application/json" }
+          );
 
-          logIn(signIndData.token, signIndData.userId);
+          logIn(signInData.token, signInData.userId);
         } catch (e) {}
       } else {
         setFormErrors(errors);

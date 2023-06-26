@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { chatRoles } from "../openai.js";
+import { chatRoles } from "./ChatNote";
 
 import "../styles/ChatNotePreviewStyles.scss";
 
