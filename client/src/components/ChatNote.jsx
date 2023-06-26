@@ -1,4 +1,4 @@
-import React, { memo, useContext, useState, useEffect, useRef } from "react";
+import React, { memo, useContext, useState, useEffect } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -75,10 +75,10 @@ const ChatNote = ({
   const [messages, setMessages] = useState(body);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlayerDisplayed, setIsPlayerDisplayed] = useState(false);
+  const [audioUrl, setAudioUrl] = useState(null);
   const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
     localStorage.getItem("isMessageAutoPlay") === "true"
   );
-  const audioPlayerRef = useRef(null);
 
   useEffect(() => {
     const isAutoPlay = localStorage.getItem("isMessageAutoPlay");
@@ -107,8 +107,8 @@ const ChatNote = ({
     const blob = new Blob([audio], { type: "audio/mp3" });
     const url = URL.createObjectURL(blob);
     if (url) {
+      setAudioUrl(url);
       setIsPlayerDisplayed(true);
-      if (audioPlayerRef.current) audioPlayerRef.current.src = url;
     }
   };
 
@@ -177,6 +177,7 @@ const ChatNote = ({
 
   const startRecording = () => {
     recorder.start();
+    setAudioUrl(null);
     setIsRecording(true);
   };
 
@@ -292,36 +293,32 @@ const ChatNote = ({
         </div>
       </DialogContent>
       <DialogActions classes={{ root: classes.actionsRoot }}>
+        <Tooltip
+          title={`Message Autoplay ${
+            isMessageAutoPlay ? "Enabled" : "Disabled"
+          }`}
+          placement="top-start"
+          arrow
+        >
+          <IconButton onClick={toggleMessageAutoPlay} size="small">
+            {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
+          </IconButton>
+        </Tooltip>
         {isLoading ? (
           <div className="chat-note-loader-wrapper">
             <Loader type={LoaderTypes.linear} />
           </div>
         ) : (
-          <>
-            <Tooltip
-              title={`Message Autoplay ${
-                isMessageAutoPlay ? "Enabled" : "Disabled"
-              }`}
-              placement="top-start"
-              arrow
-            >
-              <IconButton onClick={toggleMessageAutoPlay} size="small">
-                {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
-              </IconButton>
-            </Tooltip>
-            <div
-              className={`audio-player-wrapper ${
-                isPlayerDisplayed && "active"
-              }`}
-            >
-              <audio
-                style={{ width: "100%", height: "18px" }}
-                controls
-                ref={audioPlayerRef}
-                autoPlay={isMessageAutoPlay && !isRecording}
-              />
-            </div>
-          </>
+          <div
+            className={`audio-player-wrapper ${isPlayerDisplayed && "active"}`}
+          >
+            <audio
+              style={{ width: "100%", height: "18px" }}
+              controls
+              src={audioUrl}
+              autoPlay={isMessageAutoPlay && !!audioUrl}
+            />
+          </div>
         )}
         <button className="edit-note-button" onClick={onClose}>
           Close
