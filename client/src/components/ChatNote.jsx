@@ -109,7 +109,6 @@ const ChatNote = ({
     if (url) {
       setIsPlayerDisplayed(true);
       if (audioPlayerRef.current) audioPlayerRef.current.src = url;
-      if (isMessageAutoPlay) audioPlayerRef.current.play();
     }
   };
 
@@ -319,6 +318,7 @@ const ChatNote = ({
                 style={{ width: "100%", height: "18px" }}
                 controls
                 ref={audioPlayerRef}
+                autoPlay={isMessageAutoPlay && !isRecording}
               />
             </div>
           </>
