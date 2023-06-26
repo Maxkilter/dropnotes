@@ -4,9 +4,8 @@ import { useRequest } from "./useRequest";
 import { isNoNotes } from "../utils";
 
 export const useNoteAction = () => {
-  const { token, setNotes, setNotification, setIsNoMatching } = useContext(
-    StoreContext
-  );
+  const { token, setNotes, setNotification, setIsNoMatching } =
+    useContext(StoreContext);
   const { request, isLoading, clearError, error } = useRequest();
 
   useEffect(() => {
@@ -20,11 +19,12 @@ export const useNoteAction = () => {
     }
   }, [error, clearError, setNotification]);
 
-  const headers = useMemo(() => {
-    return {
-      Authorization: `Bearer ${token}`,
-    };
-  }, [token]);
+  const headers: { Authorization: string; "Content-type"?: string } =
+    useMemo(() => {
+      return {
+        Authorization: `Bearer ${token}`,
+      };
+    }, [token]);
 
   const fetchNotes = useCallback(async () => {
     try {
@@ -62,11 +62,12 @@ export const useNoteAction = () => {
 
   const createNote = useCallback(
     async (title: string | undefined, body: string) => {
+      headers["Content-type"] = "application/json";
       try {
         return await request(
           "/api/notes/create",
           "POST",
-          { title, body },
+          JSON.stringify({ title, body }),
           headers
         );
       } catch (e) {
@@ -77,13 +78,64 @@ export const useNoteAction = () => {
     [headers, request]
   );
 
+  const chatRequest = useCallback(
+    async (data) => {
+      try {
+        return await request(
+          "/api/notes/chat",
+          "POST",
+          JSON.stringify({ data }),
+          {
+            "Content-type": "application/json",
+          }
+        );
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while chat request ", e.message);
+      }
+    },
+    [request]
+  );
+
+  const voiceToTextRequest = useCallback(
+    async (data) => {
+      try {
+        return await request("/api/notes/transcription", "POST", data);
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while voice to text request ", e.message);
+      }
+    },
+    [request]
+  );
+
+  const textToSpeechRequest = useCallback(
+    async (data) => {
+      try {
+        return await request(
+          "/api/notes/speech",
+          "POST",
+          JSON.stringify({ data }),
+          {
+            "Content-type": "application/json",
+          }
+        );
+      } catch (e) {
+        if (e instanceof Error)
+          console.error("Error while text to speech ", e.message);
+      }
+    },
+    [request]
+  );
+
   const updateNote = useCallback(
     async (id: string, title: string, body: string) => {
+      headers["Content-type"] = "application/json";
       try {
         return await request(
           `/api/notes/${id}`,
           "PUT",
-          { title, body },
+          JSON.stringify({ title, body }),
           headers
         );
       } catch (e) {
@@ -113,5 +165,8 @@ export const useNoteAction = () => {
     updateNote,
     deleteNote,
     isLoading,
+    chatRequest,
+    voiceToTextRequest,
+    textToSpeechRequest,
   };
 };

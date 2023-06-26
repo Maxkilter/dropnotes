@@ -13,14 +13,13 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Loader from "./Loader";
 import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
-import { chatRoles, openai } from "../openai.js";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isEmpty } from "lodash";
 import { StoreContext } from "../appStore";
+import { Buffer } from "buffer";
 import LanguageDetect from "languagedetect";
 import MicRecorder from "mic-recorder-to-mp3";
-import { textToSpeechConverter } from "../textToSpeechConverter.js";
 
 import "../styles/ChatNoteStyles.scss";
 
@@ -41,12 +40,18 @@ const useStyles = makeStyles({
     color: "white",
   },
   actionsRoot: {
-    padding: "8px 16px",
+    padding: "2px 16px",
   },
   paper: {
     width: "100%",
   },
 });
+
+export const chatRoles = {
+  ASSISTANT: "assistant",
+  USER: "user",
+  SYSTEM: "system",
+};
 
 const defineLanguage = (message) => {
   const detectResults = lngDetector.detect(message, 1);
@@ -68,7 +73,6 @@ const ChatNote = ({
   const [query, setQuery] = useState("");
   const [chatTitle, setChatTitle] = useState(originTitle);
   const [messages, setMessages] = useState(body);
-  const [isChatRequestProcessing, setIsChatRequestProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlayerDisplayed, setIsPlayerDisplayed] = useState(false);
   const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
@@ -83,27 +87,29 @@ const ChatNote = ({
     }
   }, []);
 
-  const { createNote, updateNote, fetchNotes, isLoading } = useNoteAction();
+  const {
+    createNote,
+    updateNote,
+    fetchNotes,
+    isLoading,
+    chatRequest,
+    voiceToTextRequest,
+    textToSpeechRequest,
+  } = useNoteAction();
   const { setNotification } = useContext(StoreContext);
   const classes = useStyles();
   const isNewChatNote = isEmpty(id);
 
   const createVoiceMessage = async (text) => {
-    const voiceParameters = textToSpeechConverter.getVoiceParameters(
-      defineLanguage(text)
-    );
-    if (voiceParameters) {
-      const audio = await textToSpeechConverter.textToSpeech(
-        text,
-        voiceParameters
-      );
-      const blob = new Blob([audio], { type: "audio/mp3" });
-      const url = URL.createObjectURL(blob);
-      if (url) {
-        setIsPlayerDisplayed(true);
-        if (audioPlayerRef.current) audioPlayerRef.current.src = url;
-        if (isMessageAutoPlay) audioPlayerRef.current.play();
-      }
+    const lang = defineLanguage(text);
+    const response = await textToSpeechRequest({ text, lang });
+    const audio = Buffer.from(response, "base64");
+    const blob = new Blob([audio], { type: "audio/mp3" });
+    const url = URL.createObjectURL(blob);
+    if (url) {
+      setIsPlayerDisplayed(true);
+      if (audioPlayerRef.current) audioPlayerRef.current.src = url;
+      if (isMessageAutoPlay) audioPlayerRef.current.play();
     }
   };
 
@@ -118,8 +124,7 @@ const ChatNote = ({
     let newMessage;
 
     if (shouldCreateTitle) {
-      setIsChatRequestProcessing(true);
-      response = await openai.chat([
+      response = await chatRequest([
         ...messages,
         {
           role: chatRoles.USER,
@@ -128,7 +133,6 @@ const ChatNote = ({
           ),
         },
       ]);
-      !!response && setIsChatRequestProcessing(false);
     }
 
     if (!isEmpty(voiceQuery) || !isEmpty(query.trim())) {
@@ -138,15 +142,14 @@ const ChatNote = ({
       };
       setMessages([...messages, newMessage]);
       setQuery("");
-      setIsChatRequestProcessing(true);
-      response = await openai.chat([
+
+      response = await chatRequest([
         ...messages,
         {
           role: chatRoles.USER,
           content: newMessage.content,
         },
       ]);
-      !!response && setIsChatRequestProcessing(false);
     }
 
     if (response) {
@@ -174,60 +177,8 @@ const ChatNote = ({
   };
 
   const startRecording = () => {
-    if ("permissions" in navigator) {
-      navigator.permissions
-        .query({ name: "microphone" })
-        .then(function (permissionStatus) {
-          if (permissionStatus.state === "granted") {
-            recorder.start();
-            setIsRecording(true);
-          } else if (permissionStatus.state === "prompt") {
-            requestMicrophonePermission();
-          } else {
-            setNotification({
-              isOpen: true,
-              message: "Microphone access denied or unavailable.",
-              severity: "error",
-            });
-          }
-
-          permissionStatus.addEventListener("change", function () {
-            console.log(
-              "Microphone permission status changed to:",
-              permissionStatus.state
-            );
-
-            if (permissionStatus.state === "granted") {
-              recorder.start();
-              setIsRecording(true);
-            } else if (permissionStatus.state === "prompt") {
-              requestMicrophonePermission();
-            } else {
-              setNotification({
-                isOpen: true,
-                message: "Microphone access denied or unavailable.",
-                severity: "error",
-              });
-            }
-          });
-        })
-        .catch(function (error) {
-          console.error("Error checking microphone permission:", error);
-        });
-    } else {
-      console.error("Permissions API is not supported in this browser.");
-    }
-  };
-
-  const requestMicrophonePermission = () => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(function () {
-        startRecording();
-      })
-      .catch(function (error) {
-        console.error("Error accessing microphone:", error);
-      });
+    recorder.start();
+    setIsRecording(true);
   };
 
   const stopRecording = async () => {
@@ -239,11 +190,11 @@ const ChatNote = ({
         lastModified: Date.now(),
       });
       if (audioFile) {
-        setIsChatRequestProcessing(true);
-        const voiceQuery = await openai.transcription(audioFile);
+        const formData = new FormData();
+        formData.append("audio", audioFile);
+        const voiceQuery = await voiceToTextRequest(formData);
         if (voiceQuery) {
           await handleSendRequest(false, voiceQuery);
-          setIsChatRequestProcessing(false);
         }
       }
     } catch (e) {
@@ -309,7 +260,7 @@ const ChatNote = ({
             </div>
             <div className="input-container">
               <TextField
-                disabled={isLoading || isRecording || isChatRequestProcessing}
+                disabled={isLoading || isRecording}
                 autoFocus
                 placeholder="Type your message here..."
                 variant="outlined"
@@ -342,14 +293,12 @@ const ChatNote = ({
         </div>
       </DialogContent>
       <DialogActions classes={{ root: classes.actionsRoot }}>
-        {isLoading || isChatRequestProcessing ? (
-          <div className="loader-wrapper">
+        {isLoading ? (
+          <div className="chat-note-loader-wrapper">
             <Loader type={LoaderTypes.linear} />
           </div>
         ) : (
-          <div
-            className={`audio-player-wrapper ${isPlayerDisplayed && "active"}`}
-          >
+          <>
             <Tooltip
               title={`Message Autoplay ${
                 isMessageAutoPlay ? "Enabled" : "Disabled"
@@ -361,12 +310,18 @@ const ChatNote = ({
                 {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
               </IconButton>
             </Tooltip>
-            <audio
-              style={{ width: "100%", height: "18px", marginLeft: "8px" }}
-              controls
-              ref={audioPlayerRef}
-            />
-          </div>
+            <div
+              className={`audio-player-wrapper ${
+                isPlayerDisplayed && "active"
+              }`}
+            >
+              <audio
+                style={{ width: "100%", height: "18px" }}
+                controls
+                ref={audioPlayerRef}
+              />
+            </div>
+          </>
         )}
         <button className="edit-note-button" onClick={onClose}>
           Close

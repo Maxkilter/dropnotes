@@ -15,15 +15,14 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
-    "jsonwebtoken": "^8.5.1",
+    "buffer": "^6.0.3",
     "languagedetect": "^2.0.0",
     "lodash": "^4.17.21",
     "mic-recorder-to-mp3": "^2.2.2",
-    "openai": "^3.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "sass": "^1.62.1",
     "typescript": "^4.1.2",
     "web-vitals": "^0.2.4"
@@ -54,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/react-hooks": "^5.0.0",
     "@types/react-router-dom": "^5.1.6",
     "msw": "^0.25.0"

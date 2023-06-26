@@ -1,25 +1,11 @@
-import { Configuration, OpenAIApi } from "openai";
-import keys from "./keys.json";
-
-const apiKey = keys.openaiKey;
-
-class CustomFormData extends FormData {
-  getHeaders() {
-    return {};
-  }
-}
-
-export const chatRoles = {
-  ASSISTANT: "assistant",
-  USER: "user",
-  SYSTEM: "system",
-};
+const config = require("config");
+const { Configuration, OpenAIApi } = require("openai");
+const { createReadStream } = require("fs");
 
 class OpenAI {
-  constructor() {
+  constructor(apiKey) {
     const configuration = new Configuration({
       apiKey,
-      formDataCtor: CustomFormData,
     });
     this.openai = new OpenAIApi(configuration);
   }
@@ -36,10 +22,10 @@ class OpenAI {
     }
   }
 
-  async transcription(audioFile) {
+  async transcription(audioFilePath) {
     try {
       const response = await this.openai.createTranscription(
-        audioFile,
+        createReadStream(audioFilePath),
         "whisper-1"
       );
       return response.data.text;
@@ -49,4 +35,6 @@ class OpenAI {
   }
 }
 
-export const openai = new OpenAI();
+const openai = new OpenAI(config.get("apiKey"));
+
+module.exports = openai;

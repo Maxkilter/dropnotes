@@ -2,5 +2,8 @@
   "port": 5000,
   "jwtSecretKey": "Happy eternal life",
   "mongoUri": "mongodb+srv://dropnotes_admin:N26vkkD3bLmT6Zv@cluster0.rfhgf.mongodb.net/dropnotes?retryWrites=true&w=majority",
-  "baseUrl": "http://localhost:5000"
+  "baseUrl": "http://localhost:5000",
+  "apiKey": "",
+  "private_key": "",
+  "client_email": ""
 }

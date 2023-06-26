@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
-import axios from "axios";
-import keys from "./keys.json";
+const jwt = require("jsonwebtoken");
+const axios = require("axios");
+const config = require("config");
 
-const client_email = keys.client_email;
-const private_key = keys.private_key;
+const client_email = config.get("client_email");
+const private_key = config.get("private_key");
 
 const languages = {
   english: {
@@ -104,11 +104,13 @@ class TextToSpeechConverter {
         },
       });
 
-      return Buffer.from(response.data.audioContent, "base64");
+      return response.data.audioContent;
     } catch (e) {
       console.error("Error while text to speech", e.message);
     }
   }
 }
 
-export const textToSpeechConverter = new TextToSpeechConverter();
+const textToSpeechConverter = new TextToSpeechConverter();
+
+module.exports = textToSpeechConverter;
