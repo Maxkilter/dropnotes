@@ -29,6 +29,8 @@ const recorder = new MicRecorder({
   bitRate: 128,
 });
 
+const isiOS = window.navigator.userAgent.match(/iOS/i);
+
 const useStyles = makeStyles({
   chatTitleInput: {
     fontWeight: 600,
@@ -293,17 +295,19 @@ const ChatNote = ({
         </div>
       </DialogContent>
       <DialogActions classes={{ root: classes.actionsRoot }}>
-        <Tooltip
-          title={`Message Autoplay ${
-            isMessageAutoPlay ? "Enabled" : "Disabled"
-          }`}
-          placement="top-start"
-          arrow
-        >
-          <IconButton onClick={toggleMessageAutoPlay} size="small">
-            {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
-          </IconButton>
-        </Tooltip>
+        {!isiOS && (
+          <Tooltip
+            title={`Message Autoplay ${
+              isMessageAutoPlay ? "Enabled" : "Disabled"
+            }`}
+            placement="top-start"
+            arrow
+          >
+            <IconButton onClick={toggleMessageAutoPlay} size="small">
+              {isMessageAutoPlay ? <VolumeUp /> : <VolumeOff />}
+            </IconButton>
+          </Tooltip>
+        )}
         {isLoading ? (
           <div className="chat-note-loader-wrapper">
             <Loader type={LoaderTypes.linear} />
@@ -316,7 +320,7 @@ const ChatNote = ({
               style={{ width: "100%", height: "18px" }}
               controls
               src={audioUrl}
-              autoPlay={isMessageAutoPlay && !!audioUrl}
+              autoPlay={isMessageAutoPlay && !!audioUrl && !isiOS}
             />
           </div>
         )}
