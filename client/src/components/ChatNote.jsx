@@ -324,7 +324,11 @@ const ChatNote = ({
             />
           </div>
         )}
-        <button className="edit-note-button" onClick={onClose}>
+        <button
+          className="edit-note-button"
+          onClick={onClose}
+          disabled={isLoading}
+        >
           Close
         </button>
       </DialogActions>
