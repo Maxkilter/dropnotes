@@ -188,7 +188,7 @@ const SignUpPage = () => {
                   label="Password"
                   type="password"
                   id="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   error={!!formErrors.password}
                   helperText={formErrors.password}
                 />

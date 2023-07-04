@@ -65,9 +65,10 @@ const EditNote = (props: EditNoteProps) => {
     !isEqual(editNote.title.trim(), originTitle) ||
     !isEqual(editNote.body.trim(), originBody);
 
-  const closeModal = useCallback(() => setIsSimpleNoteOpen(false), [
-    setIsSimpleNoteOpen,
-  ]);
+  const closeModal = useCallback(
+    () => setIsSimpleNoteOpen(false),
+    [setIsSimpleNoteOpen]
+  );
 
   const modifyNote = useCallback(async () => {
     const { title, body } = editNote;
@@ -143,7 +144,11 @@ const EditNote = (props: EditNoteProps) => {
           Close
         </button>
         {shouldUpdateNote && !isLoading && (
-          <button className="edit-note-button" onClick={modifyNote}>
+          <button
+            className="edit-note-button"
+            onClick={modifyNote}
+            disabled={isLoading}
+          >
             Update
           </button>
         )}
