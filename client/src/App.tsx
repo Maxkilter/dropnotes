@@ -10,9 +10,8 @@ import { LoaderTypes } from "./types";
 import "./App.css";
 
 const App = () => {
-  const { token, isReady, notification, setNotification } = useContext(
-    StoreContext
-  );
+  const { token, isReady, notification, setNotification } =
+    useContext(StoreContext);
   const { isOpen, message, severity } = notification;
   const isAuthenticated = !!token;
   const routes = navigation(isAuthenticated);
