@@ -11,7 +11,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Search from "./Search";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { StoreContext } from "../appStore";
 import { NavbarProps } from "../types";
 
@@ -56,13 +56,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Navbar = ({ isAuthenticated }: NavbarProps) => {
   const { logOut } = useContext(StoreContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [
-    mobileMoreAnchorEl,
-    setMobileMoreAnchorEl,
-  ] = useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -87,7 +85,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
   const handleOut = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
     logOut();
-    history.push("/");
+    navigate("/sign-in");
     handleMenuClose();
   };
 

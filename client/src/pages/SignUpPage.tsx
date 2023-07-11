@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    [theme.breakpoints.down("sm")]: {
+      marginTop: 0,
+      marginBottom: "32px",
+    },
   },
   avatar: {
     margin: theme.spacing(1),
@@ -39,6 +43,39 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  signUpPageWrapper: {
+    display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column-reverse",
+    },
+  },
+  descriptionWrapper: {
+    width: "68%",
+    marginTop: "78px",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
+  },
+  video: {
+    display: "flex",
+    width: "98%",
+    border: "1px solid silver",
+    borderRadius: "16px",
+    padding: "2vw",
+    [theme.breakpoints.down("sm")]: {
+      margin: "0 auto",
+    },
+  },
+  description: {
+    width: "65%",
+    margin: "16px auto",
+    padding: "1vw",
+    border: "1px solid silver",
+    borderRadius: "16px",
+    [theme.breakpoints.down("sm")]: {
+      width: "80%",
+    },
   },
 }));
 
@@ -127,7 +164,7 @@ const SignUpPage = () => {
   );
 
   return (
-    <>
+    <div className={classes.signUpPageWrapper}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
@@ -214,8 +251,25 @@ const SignUpPage = () => {
           </form>
         </div>
       </Container>
+      <div className={classes.descriptionWrapper}>
+        <video className={classes.video} autoPlay loop>
+          <source src="/dropnotes_demo.mp4" type="video/mp4" />
+        </video>
+        <Typography
+          className={classes.description}
+          variant="body2"
+          align="center"
+        >
+          With Dropnotes app, managing your notes is a breeze. Just create a
+          user profile and you are good to go. These can be both simple text
+          notes and notes in the form of a chat with artificial intelligence.
+          You can communicate with it using both text and voice messages. In
+          turn, chat GPT will answer you with a voice, which will make your
+          communication as close to natural as possible.
+        </Typography>
+      </div>
       {isLoading && <Loader type={LoaderTypes.dots} />}
-    </>
+    </div>
   );
 };
 
