@@ -1,4 +1,4 @@
-import React, { memo, useContext, useState, useEffect } from "react";
+import React, { memo, useContext, useState, useEffect, useRef } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import { DialogContent } from "@material-ui/core";
@@ -81,6 +81,7 @@ const ChatNote = ({
   const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
     localStorage.getItem("isMessageAutoPlay") === "true"
   );
+  const audioPlayer = useRef(null);
 
   useEffect(() => {
     const isAutoPlay = localStorage.getItem("isMessageAutoPlay");
@@ -178,6 +179,7 @@ const ChatNote = ({
   };
 
   const startRecording = () => {
+    audioPlayer?.current?.pause();
     recorder.start();
     setAudioUrl(null);
     setIsRecording(true);
@@ -275,7 +277,10 @@ const ChatNote = ({
               />
               <div className="send-query-btn-wrapper">
                 {!isEmpty(query) && (
-                  <IconButton onClick={() => handleSendRequest(false)}>
+                  <IconButton
+                    onClick={() => handleSendRequest(false)}
+                    disabled={isLoading}
+                  >
                     <SendIcon classes={{ root: classes.iconRoot }} />
                   </IconButton>
                 )}
@@ -285,7 +290,7 @@ const ChatNote = ({
                       <div className="stop-recording-btn" />
                     </IconButton>
                   ) : (
-                    <IconButton onClick={startRecording}>
+                    <IconButton onClick={startRecording} disabled={isLoading}>
                       <MicIcon classes={{ root: classes.iconRoot }} />
                     </IconButton>
                   ))}
@@ -317,6 +322,7 @@ const ChatNote = ({
             className={`audio-player-wrapper ${isPlayerDisplayed && "active"}`}
           >
             <audio
+              ref={audioPlayer}
               style={{ width: "100%", height: "18px" }}
               controls
               src={audioUrl}
