@@ -1,18 +1,21 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import { createRoot } from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
+import App from "./App";
 import { StoreProvider } from "./appStore";
 import ReactGA from "react-ga4";
 
+import "./index.css";
+
 ReactGA.initialize("G-M87VKY5NXM");
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container!);
+
+root.render(
   <StoreProvider>
     <App />
-  </StoreProvider>,
-  document.getElementById("root")
+  </StoreProvider>
 );
 
 const SendAnalytics = () => {

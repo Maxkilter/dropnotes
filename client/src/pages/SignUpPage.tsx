@@ -182,7 +182,7 @@ const SignUpPage = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  autoComplete="fname"
+                  autoComplete="given-name"
                   name="firstName"
                   variant="outlined"
                   required
@@ -200,7 +200,7 @@ const SignUpPage = () => {
                   id="lastName"
                   label="Last Name"
                   name="lastName"
-                  autoComplete="lname"
+                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -252,7 +252,14 @@ const SignUpPage = () => {
         </div>
       </Container>
       <div className={classes.descriptionWrapper}>
-        <video className={classes.video} autoPlay loop>
+        <video
+          className={classes.video}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/dropnotes_demo_poster.jpeg"
+        >
           <source src="/dropnotes_demo.mp4" type="video/mp4" />
         </video>
         <Typography
