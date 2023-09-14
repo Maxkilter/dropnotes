@@ -64,17 +64,13 @@ const EditNote = (props: EditNoteProps) => {
   const shouldUpdateNote =
     !isEqual(editNote.title.trim(), originTitle) ||
     !isEqual(editNote.body.trim(), originBody);
-
-  const closeModal = useCallback(
-    () => setIsSimpleNoteOpen(false),
-    [setIsSimpleNoteOpen]
-  );
+  const closeModal = () => setIsSimpleNoteOpen(false);
 
   const modifyNote = useCallback(async () => {
     const { title, body } = editNote;
 
     if (shouldUpdateNote) {
-      const updatedNote = await updateNote(id, title, body);
+      const updatedNote = await updateNote(id, title.trim(), body.trim());
       if (updatedNote) await fetchNotes();
     }
     if (!isLoading) closeModal();
@@ -100,10 +96,10 @@ const EditNote = (props: EditNoteProps) => {
         <div className="edit-note-box">
           <DialogContent>
             <div
-              title="note-title"
+              data-title="note-title"
               ref={editNoteTitleRef}
               id="edit-note-title"
-              className="note-title"
+              className="edit-note-title"
               contentEditable
               role="textbox"
               data-placeholder="Title"
@@ -116,10 +112,10 @@ const EditNote = (props: EditNoteProps) => {
               {originTitle}
             </div>
             <div
-              title="note-body"
+              data-title="note-body"
               ref={editNoteBodyRef}
               id="edit-note-body"
-              className="note-body"
+              className="edit-note-body"
               contentEditable
               aria-multiline
               role="textbox"
