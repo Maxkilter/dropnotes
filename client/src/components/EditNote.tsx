@@ -64,7 +64,10 @@ const EditNote = (props: EditNoteProps) => {
   const shouldUpdateNote =
     !isEqual(editNote.title.trim(), originTitle) ||
     !isEqual(editNote.body.trim(), originBody);
-  const closeModal = () => setIsSimpleNoteOpen(false);
+  const closeModal = useCallback(
+    () => setIsSimpleNoteOpen(false),
+    [setIsSimpleNoteOpen]
+  );
 
   const modifyNote = useCallback(async () => {
     const { title, body } = editNote;
