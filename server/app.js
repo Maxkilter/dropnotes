@@ -14,7 +14,23 @@ const corsOptions = {
 };
 
 const app = express();
-app.use(helmet());
+
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      "script-src": [
+        "'self'",
+        "https://www.googletagmanager.com",
+        "https://www.google-analytics.com",
+      ],
+      "connect-src": ["'self'", "https://www.google-analytics.com"],
+      "default-src": ["'self'"],
+      "media-src": ["'self'", "blob:"],
+    },
+  })
+);
+
 app.use(cors(corsOptions));
 
 app.use(express.json({ extended: true }));

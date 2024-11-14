@@ -13,7 +13,9 @@
     "install-app": "yarn client:install && yarn server:install",
     "clear-port": "npx kill-port 8000",
     "deploy": "yarn --cwd client build && yarn --cwd server start",
-    "deploy-cluster": "yarn --cwd client build && yarn --cwd server cluster"
+    "deploy-cluster": "yarn --cwd client build && yarn --cwd server cluster",
+    "prettier": "npx prettier . --check",
+    "prettier:fix": "npx prettier . --write"
   },
   "keywords": [
     "react",

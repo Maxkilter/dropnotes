@@ -2,7 +2,7 @@ import { cleanup, render, waitFor, screen } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 import NotesPage from "../pages/NotesPage";
-import { mockNotes, mockStore } from "./moks";
+import { mockNotes, mockStore } from "./mockups";
 import { customRender } from "./tests-utils";
 
 const server = setupServer(

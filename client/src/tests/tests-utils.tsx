@@ -1,6 +1,6 @@
 import { StoreContext } from "../appStore";
 import { render } from "@testing-library/react";
-import { mockStore } from "./moks";
+import { mockStore } from "./mockups";
 
 export const customRender = (
   ui: object,

@@ -1,8 +1,8 @@
 const { Router } = require("express");
 const Note = require("../models/Note");
 const authMid = require("../middleware/auth.middleware");
-const openai = require("../openai.js");
-const textToSpeechConverter = require("../textToSpeechConverter.js");
+const openai = require("../modules/openai.js");
+const textToSpeechConverter = require("../modules/textToSpeechConverter.js");
 const multer = require("multer");
 const fs = require("fs");
 const { unlink } = require("fs/promises");

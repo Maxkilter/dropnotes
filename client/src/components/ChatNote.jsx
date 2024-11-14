@@ -15,7 +15,6 @@ import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
-import { isEmpty } from "lodash";
 import { StoreContext } from "../appStore";
 import { Buffer } from "buffer";
 import LanguageDetect from "languagedetect";
@@ -101,7 +100,7 @@ const ChatNote = ({
   } = useNoteAction();
   const { setNotification } = useContext(StoreContext);
   const classes = useStyles();
-  const isNewChatNote = isEmpty(id);
+  const isNewChatNote = !id;
 
   const createVoiceMessage = async (text) => {
     const lang = defineLanguage(text);
@@ -137,7 +136,7 @@ const ChatNote = ({
       ]);
     }
 
-    if (!isEmpty(voiceQuery) || !isEmpty(query.trim())) {
+    if (!voiceQuery || !query.trim()) {
       newMessage = {
         role: chatRoles.USER,
         content: voiceQuery ? voiceQuery : query,
@@ -276,7 +275,7 @@ const ChatNote = ({
                 size="small"
               />
               <div className="send-query-btn-wrapper">
-                {!isEmpty(query) && (
+                {query && (
                   <IconButton
                     onClick={() => handleSendRequest(false)}
                     disabled={isLoading}
@@ -284,7 +283,7 @@ const ChatNote = ({
                     <SendIcon classes={{ root: classes.iconRoot }} />
                   </IconButton>
                 )}
-                {isEmpty(query) &&
+                {!query &&
                   (isRecording ? (
                     <IconButton onClick={stopRecording}>
                       <div className="stop-recording-btn" />
