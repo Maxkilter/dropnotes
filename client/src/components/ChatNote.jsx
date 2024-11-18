@@ -15,6 +15,7 @@ import isEqual from "lodash/isEqual";
 import { TransitionComponent } from "./TransitionComponent";
 import { useNoteAction } from "../hooks";
 import { LoaderTypes } from "../types";
+import isEmpty from "lodash/isEmpty.js";
 import { StoreContext } from "../appStore";
 import { Buffer } from "buffer";
 import LanguageDetect from "languagedetect";
@@ -136,7 +137,7 @@ const ChatNote = ({
       ]);
     }
 
-    if (!voiceQuery || !query.trim()) {
+    if (!isEmpty(voiceQuery) || !isEmpty(query.trim())) {
       newMessage = {
         role: chatRoles.USER,
         content: voiceQuery ? voiceQuery : query,

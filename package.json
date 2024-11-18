@@ -15,7 +15,8 @@
     "deploy": "yarn --cwd client build && yarn --cwd server start",
     "deploy-cluster": "yarn --cwd client build && yarn --cwd server cluster",
     "prettier": "npx prettier . --check",
-    "prettier:fix": "npx prettier . --write"
+    "prettier:fix": "npx prettier . --write",
+    "reinstall-app": "rm -rf client/node_modules && rm -rf server/node_modules && yarn install-app"
   },
   "keywords": [
     "react",
