@@ -3,7 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
-const { isProduction } = require("../server");
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.post(
   [
     check("email", "Enter a valid email").isEmail(),
     check("password", "Password must be at least six characters long").isLength(
-      { min: 6 }
+      { min: 6 },
     ),
   ],
   async (req, res) => {
@@ -47,7 +48,7 @@ router.post(
         process.env.JWT_SECRET_KEY,
         {
           expiresIn: "24h",
-        }
+        },
       );
 
       res.cookie("jwtToken", token, {
@@ -59,13 +60,14 @@ router.post(
 
       return res.status(201).json({
         message: "User registered successfully",
+        status: "registered",
       });
     } catch (error) {
       return res
         .status(500)
         .json({ message: "Error occurred during registration", error });
     }
-  }
+  },
 );
 
 router.get("/csrf-token", (req, res) => {
@@ -123,7 +125,7 @@ router.post(
         .status(500)
         .json({ message: "Error occurred during login", error });
     }
-  }
+  },
 );
 
 router.post("/logout", (req, res) => {

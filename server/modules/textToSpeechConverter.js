@@ -64,7 +64,7 @@ class TextToSpeechConverter {
         iat: Math.floor(Date.now() / 1000),
       },
       PRIVATE_KEY,
-      { algorithm: "RS256" }
+      { algorithm: "RS256" },
     );
 
     const response = await axios.post(
@@ -72,7 +72,7 @@ class TextToSpeechConverter {
       {
         grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
         assertion: token,
-      }
+      },
     );
     return response.data.access_token;
   }

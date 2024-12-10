@@ -67,7 +67,7 @@ const defineLanguage = (message: string): string => {
 
 const createChatTitleRequest = (message: string) =>
   `Create the title of this chat in ${defineLanguage(
-    message
+    message,
   )} language. The title should indicate what was discussed in the chat.`;
 
 export const ChatNote = memo(
@@ -85,7 +85,7 @@ export const ChatNote = memo(
     const [isPlayerDisplayed, setIsPlayerDisplayed] = useState(false);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
     const [isMessageAutoPlay, setIsMessageAutoPlay] = useState(
-      localStorage.getItem("isMessageAutoPlay") === "true"
+      localStorage.getItem("isMessageAutoPlay") === "true",
     );
     const audioPlayer = useRef<HTMLAudioElement | null>(null);
 
@@ -111,13 +111,15 @@ export const ChatNote = memo(
 
     const createVoiceMessage = async (text: string) => {
       const lang = defineLanguage(text);
-      const response = await textToSpeechRequest({ text, lang });
-      const audio = Buffer.from(response, "base64");
-      const blob = new Blob([audio], { type: "audio/mp3" });
-      const url = URL.createObjectURL(blob);
-      if (url) {
-        setAudioUrl(url);
-        setIsPlayerDisplayed(true);
+      const speechText = await textToSpeechRequest({ text, lang });
+      if (speechText) {
+        const audio = Buffer.from(speechText, "base64");
+        const blob = new Blob([audio], { type: "audio/mp3" });
+        const url = URL.createObjectURL(blob);
+        if (url) {
+          setAudioUrl(url);
+          setIsPlayerDisplayed(true);
+        }
       }
     };
 
@@ -129,7 +131,7 @@ export const ChatNote = memo(
 
     const handleSendRequest = async (
       shouldCreateTitle: boolean,
-      voiceQuery?: string
+      voiceQuery?: string,
     ): Promise<string | void> => {
       let response;
       let newMessage;
@@ -141,7 +143,7 @@ export const ChatNote = memo(
             {
               role: chatRoles.USER,
               content: createChatTitleRequest(
-                messages[messages.length - 1].content
+                messages[messages.length - 1].content,
               ),
             },
           ]);
@@ -357,5 +359,5 @@ export const ChatNote = memo(
         </DialogActions>
       </Dialog>
     );
-  }
+  },
 );

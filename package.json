@@ -1,8 +1,7 @@
 {
   "name": "dropnotes",
-  "version": "5.1.0",
+  "version": "7.0.0",
   "description": "",
-  "main": "app.js",
   "scripts": {
     "start": "yarn --cwd server start",
     "server": "yarn --cwd server dev",
@@ -26,6 +25,6 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "prettier": "2.8.8"
+    "prettier": "3.4.2"
   }
 }

@@ -50,7 +50,7 @@ export const useRequest = () => {
           "X-Csrf-Token": sessionStorage.getItem("csrfToken"),
         },
         options = { credentials: "include" },
-      }: { method?: string; body?: any; headers?: {}; options?: {} } = {}
+      }: { method?: string; body?: any; headers?: {}; options?: {} } = {},
     ) => {
       setIsLoading(true);
 
@@ -58,7 +58,7 @@ export const useRequest = () => {
 
       try {
         const makeRequest: (
-          csrfTokenOverride?: string
+          csrfTokenOverride?: string,
         ) => Promise<any> = async (csrfTokenOverride?: string) => {
           const response = await fetch(url, {
             method,
@@ -84,7 +84,7 @@ export const useRequest = () => {
             }
             console.error(responseData);
             return setError(
-              responseData?.message || "An unknown error occurred."
+              responseData?.message || "An unknown error occurred.",
             );
           }
           retryAttempt = false;
@@ -100,7 +100,7 @@ export const useRequest = () => {
         setIsLoading(false);
       }
     },
-    [navigate, fetchCsrfToken]
+    [navigate, fetchCsrfToken],
   );
 
   return { isLoading, error, request, clearError, fetchCsrfToken };

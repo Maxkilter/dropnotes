@@ -23,7 +23,7 @@ export const useNoteAction = () => {
         setNotes(notes);
       }
     },
-    [request, setNotes, setIsNoMatching]
+    [request, setNotes, setIsNoMatching],
   );
 
   const createNote = useCallback(
@@ -32,7 +32,7 @@ export const useNoteAction = () => {
         method: "POST",
         body: JSON.stringify({ title, body }),
       }),
-    [request]
+    [request],
   );
 
   const chatRequest = useCallback(
@@ -41,7 +41,7 @@ export const useNoteAction = () => {
         method: "POST",
         body: JSON.stringify({ data }),
       }),
-    [request]
+    [request],
   );
 
   const voiceToTextRequest = useCallback(
@@ -53,7 +53,7 @@ export const useNoteAction = () => {
         },
         body: data,
       }),
-    [request]
+    [request],
   );
 
   const textToSpeechRequest = useCallback(
@@ -62,7 +62,7 @@ export const useNoteAction = () => {
         method: "POST",
         body: JSON.stringify({ data }),
       }),
-    [request]
+    [request],
   );
 
   const updateNote = useCallback(
@@ -71,13 +71,13 @@ export const useNoteAction = () => {
         method: "PUT",
         body: JSON.stringify({ title, body }),
       }),
-    [request]
+    [request],
   );
 
   const deleteNote = useCallback(
     async (id: string) =>
       await request(`api/notes/${id}`, { method: "DELETE" }),
-    [request]
+    [request],
   );
 
   return {

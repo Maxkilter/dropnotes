@@ -31,7 +31,7 @@ class OpenAI {
     try {
       const response = await this.openai.createTranscription(
         createReadStream(audioFilePath),
-        "whisper-1"
+        "whisper-1",
       );
       return response.data.text;
     } catch (e) {

@@ -41,6 +41,7 @@ export const NewNote = () => {
   const addNewNote = useCallback(async () => {
     const { title, body } = note;
     setNote(noteDefaultState);
+    if (newNoteBodyRef.current) newNoteBodyRef.current.innerText = "";
     setIsAddingFormExpanded(false);
 
     if (shouldCreateNote) {
@@ -94,7 +95,7 @@ export const NewNote = () => {
               contentEditable
               aria-multiline
               role="textbox"
-              data-placeholder="Add a note..."
+              data-placeholder="Type your note here..."
               onInput={(event: ChangeEvent<HTMLDivElement>) =>
                 handleChange(event, note, setNote)
               }

@@ -60,7 +60,7 @@ router.post("/transcription", upload.single("audio"), async (req, res) => {
     const mp3Path = resolve(
       __dirname,
       "../records",
-      `${req.file.filename}.mp3`
+      `${req.file.filename}.mp3`,
     );
 
     if (mp3Path) {
@@ -83,9 +83,14 @@ router.post("/speech", async (req, res) => {
     const voiceParameters = textToSpeechConverter.getVoiceParameters(lang);
     const speech = await textToSpeechConverter.textToSpeech(
       text,
-      voiceParameters
+      voiceParameters,
     );
-    return res.json(speech);
+    if (!speech) {
+      return res.status(500).json({
+        message: "Sorry, we couldn't generate the voice output at this time 😔",
+      });
+    }
+    return res.status(200).json(speech);
   } catch (e) {
     console.error(`Error while voice to text request: ${e.message}`);
     return res

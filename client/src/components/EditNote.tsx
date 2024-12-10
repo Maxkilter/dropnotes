@@ -67,7 +67,7 @@ export const EditNote = memo(
       !isEqual(editNote.body.trim(), originBody);
     const closeModal = useCallback(
       () => setIsSimpleNoteOpen(false),
-      [setIsSimpleNoteOpen]
+      [setIsSimpleNoteOpen],
     );
 
     const modifyNote = useCallback(async () => {
@@ -155,5 +155,5 @@ export const EditNote = memo(
         </DialogActions>
       </Dialog>
     );
-  }
+  },
 );

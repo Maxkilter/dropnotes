@@ -17,7 +17,7 @@ export const setFocus = (element: RefObject<HTMLDivElement>) =>
 
 export const handleEnterPress = (
   event: KeyboardEvent<HTMLDivElement>,
-  element: RefObject<HTMLDivElement>
+  element: RefObject<HTMLDivElement>,
 ) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -28,7 +28,7 @@ export const handleEnterPress = (
 export const handleChange = (
   e: ChangeEvent<HTMLDivElement>,
   note: NoteState,
-  setNote: Dispatch<SetStateAction<NoteState>>
+  setNote: Dispatch<SetStateAction<NoteState>>,
 ) =>
   setNote({
     ...note,

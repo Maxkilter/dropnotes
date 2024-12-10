@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) =>
         display: "none",
       },
     },
-  })
+  }),
 );
 
 export const Navbar = () => {
@@ -90,7 +90,7 @@ export const Navbar = () => {
     event.preventDefault();
 
     const response = await request("/api/auth/logout", { method: "POST" });
-    if (response.status === "loggedOut") {
+    if (response?.status === "loggedOut") {
       sessionStorage.removeItem("csrfToken");
       navigate("/sign-in");
     }

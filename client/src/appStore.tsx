@@ -36,7 +36,7 @@ export const StoreProvider = ({ children }: any) => {
   const [notes, setNotes] = useState<NoteType[] | null>(null);
   const [isNoMatching, setIsNoMatching] = useState(false);
   const [notification, setNotification] = useState<NotificationState>(
-    defaultNotificationState
+    defaultNotificationState,
   );
 
   const store = {

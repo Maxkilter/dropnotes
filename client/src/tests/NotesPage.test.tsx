@@ -8,7 +8,7 @@ import { customRender } from "./tests-utils";
 const server = setupServer(
   rest.get("/api/notes", (req, res, ctx) => {
     return res(ctx.status(200));
-  })
+  }),
 );
 
 beforeAll(() => server.listen());

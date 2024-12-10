@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 7,
       right: 5,
     },
-  })
+  }),
 );
 
 export const Search = () => {
@@ -77,7 +77,7 @@ export const Search = () => {
 
       if (query !== prevQuery) await searchNotes(query);
     },
-    [searchNotes, prevQuery]
+    [searchNotes, prevQuery],
   );
 
   const handleDebouncedSearch = useCallback(
@@ -91,7 +91,7 @@ export const Search = () => {
       });
       return value ? searchFn(value) : fetchNotes();
     },
-    [sendQuery, prevSearchFn, fetchNotes]
+    [sendQuery, prevSearchFn, fetchNotes],
   );
 
   const clearSearch = useCallback(() => {

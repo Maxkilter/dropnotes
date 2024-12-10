@@ -74,7 +74,7 @@ export const Note = ({ note }: { note: NoteType }) => {
 
   const openNote = useCallback(
     () => (isChat ? setIsChatNoteOpen(true) : setIsSimpleNoteOpen(true)),
-    [isChat]
+    [isChat],
   );
 
   return (

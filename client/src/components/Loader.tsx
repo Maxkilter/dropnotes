@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       left: 1,
     },
-  })
+  }),
 );
 
 export const DotsProgress = ({ text }: { text: string }) => {

@@ -9,7 +9,11 @@ const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 const { doubleCsrf } = require("csrf-csrf");
+const fs = require("fs");
+const http = require("http");
+const http2 = require("http2");
 
 require("./passportConfig")(passport);
 
@@ -35,7 +39,7 @@ server.use(
       "font-src": ["'self'", "https://fonts.gstatic.com"],
       "media-src": ["'self'", "blob:"],
     },
-  })
+  }),
 );
 
 server.use(express.json());
@@ -58,20 +62,30 @@ const { doubleCsrfProtection, invalidCsrfTokenError } = doubleCsrf({
   getTokenFromRequest: (req) => req.headers["x-csrf-token"],
 });
 
-server.use(doubleCsrfProtection);
+const mongoStore = new MongoDBStore({
+  uri: process.env.MONGO_URI,
+  collection: "sessions",
+});
+
+mongoStore.on("error", (error) => {
+  console.error("Session store error:", error);
+});
 
 server.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: mongoStore,
     cookie: {
       httpOnly: true,
       secure: isProduction,
       sameSite: "strict",
     },
-  })
+  }),
 );
+
+server.use(doubleCsrfProtection);
 
 server.use(passport.initialize());
 server.use(passport.session());
@@ -95,24 +109,39 @@ server.get("/*", (req, res) => {
   return res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-const { PORT = 8000, MONGO_URI } = process.env;
+const { PORT = 8000, MONGO_URI, SSL_KEY, SSL_CERT } = process.env;
 
-const start = async () => {
+const startServer = async () => {
   try {
     await mongoose.connect(MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
     console.log("MongoDB connected successfully");
-    server.listen(PORT, () => console.log(`App started on port ${PORT}...`));
+
+    if (SSL_KEY && SSL_CERT) {
+      const httpsServer = http2.createSecureServer(
+        {
+          key: fs.readFileSync(SSL_KEY),
+          cert: fs.readFileSync(SSL_CERT),
+          allowHTTP1: true,
+        },
+        server,
+      );
+
+      return httpsServer.listen(PORT, () => {
+        console.log(`HTTP/2 server running on port ${PORT}`);
+      });
+    }
+
+    const httpServer = http.createServer(server);
+    httpServer.listen(PORT, () => {
+      console.log(`HTTP server running on port ${PORT}`);
+    });
   } catch (e) {
     console.error("Server error:", e.message);
     process.exit(1);
   }
 };
 
-start();
-
-module.exports = {
-  isProduction,
-};
+startServer();

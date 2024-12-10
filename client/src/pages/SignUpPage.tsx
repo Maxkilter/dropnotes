@@ -109,7 +109,7 @@ export const SignUpPage = () => {
         setFormErrors({ ...formErrors, password: "" });
       }
     },
-    [form, setForm, formErrors, setFormErrors]
+    [form, setForm, formErrors, setFormErrors],
   );
 
   const signUpHandler = useCallback(
@@ -131,28 +131,30 @@ export const SignUpPage = () => {
           },
         });
 
-        setNotification({
-          isOpen: true,
-          message: signUpData.message,
-          severity: "success",
-        });
+        if (signUpData?.status === "registered") {
+          setNotification({
+            isOpen: true,
+            message: signUpData.message,
+            severity: "success",
+          });
 
-        const response = await request("/api/auth/login", {
-          method: "POST",
-          body: JSON.stringify({
-            email: form.email,
-            password: form.password,
-          }),
-        });
+          const response = await request("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              email: form.email,
+              password: form.password,
+            }),
+          });
 
-        if (response.status === "authenticated") {
-          navigate("/");
+          if (response?.status === "authenticated") {
+            navigate("/");
+          }
         }
       } else {
         setFormErrors(errors);
       }
     },
-    [form, request, setNotification, fetchCsrfToken, navigate]
+    [form, request, setNotification, fetchCsrfToken, navigate],
   );
 
   return (

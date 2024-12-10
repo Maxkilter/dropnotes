@@ -58,7 +58,7 @@ export const SignInPage = () => {
         setFormError({ email: "" });
       }
     },
-    [form, setForm, formError, setFormError]
+    [form, setForm, formError, setFormError],
   );
 
   const signInHandler = useCallback(
@@ -85,7 +85,7 @@ export const SignInPage = () => {
         setFormError(error);
       }
     },
-    [form, request, navigate, fetchCsrfToken]
+    [form, request, navigate, fetchCsrfToken],
   );
 
   if (isLoading) {

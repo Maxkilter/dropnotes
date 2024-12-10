@@ -20,7 +20,7 @@ describe("useRequest hook", () => {
       Promise.resolve({
         json: () => Promise.resolve({}),
         ok: true,
-      })
+      }),
     );
     const { result, waitForNextUpdate } = renderHook(() => useRequest());
 
@@ -39,7 +39,7 @@ describe("useRequest hook", () => {
       Promise.resolve({
         json: () => Promise.resolve(response),
         ok: true,
-      })
+      }),
     );
     const { result } = renderHook(() => useRequest());
 
@@ -57,7 +57,7 @@ describe("useRequest hook", () => {
         json: () => Promise.resolve({ message: errorMessage }),
         ok: false,
         status: 401,
-      })
+      }),
     );
 
     const logOut = jest.fn();
@@ -81,7 +81,7 @@ describe("useRequest hook", () => {
         json: () => Promise.resolve({ message: errorMessage }),
         ok: false,
         status: 500,
-      })
+      }),
     );
 
     const { result } = renderHook(() => useRequest());

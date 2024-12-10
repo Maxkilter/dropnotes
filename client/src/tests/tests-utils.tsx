@@ -4,12 +4,12 @@ import { mockStore } from "./mockups";
 
 export const customRender = (
   ui: object,
-  { providerProps, ...renderOptions }: any
+  { providerProps, ...renderOptions }: any,
 ) => {
   return render(
     <StoreContext.Provider value={providerProps ? providerProps : mockStore}>
       {ui}
     </StoreContext.Provider>,
-    renderOptions
+    renderOptions,
   );
 };
