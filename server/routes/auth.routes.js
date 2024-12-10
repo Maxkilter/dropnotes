@@ -1,25 +1,25 @@
-const { Router } = require("express");
-const router = Router();
+const express = require("express");
 const bcrypt = require("bcryptjs");
-const { check, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
+const { isProduction } = require("../server");
+
+const router = express.Router();
 
 router.post(
   "/register",
   [
-    check("email", "Email is not correct").isEmail(),
-    check("password", "Password must be more than six symbols").isLength({
-      min: 6,
-    }),
+    check("email", "Enter a valid email").isEmail(),
+    check("password", "Password must be at least six characters long").isLength(
+      { min: 6 }
+    ),
   ],
   async (req, res) => {
     try {
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
-        res.status(400).json({
-          status: 400,
+        return res.status(400).json({
           errors: errors.array(),
           message: "Incorrect registration data",
         });
@@ -27,34 +27,55 @@ router.post(
 
       const { firstName, lastName, email, password } = req.body;
 
-      const candidate = await User.findOne({ email });
-
-      if (candidate) {
-        return res
-          .status(400)
-          .json({ status: 400, message: "User already exist" });
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
-
-      const user = new User({
+      const newUser = new User({
         firstName,
         lastName,
         email,
         password: hashedPassword,
       });
 
-      await user.save();
+      await newUser.save();
 
-      res.status(201).json({ status: 201, message: "User created!" });
-    } catch (e) {
-      res.status(500).json({
-        status: 500,
-        message: "Error occurred while creating a user",
+      const token = jwt.sign(
+        { userId: newUser.id },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: "24h",
+        }
+      );
+
+      res.cookie("jwtToken", token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
+
+      return res.status(201).json({
+        message: "User registered successfully",
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error occurred during registration", error });
     }
   }
 );
+
+router.get("/csrf-token", (req, res) => {
+  try {
+    return res.status(200).json({ csrfToken: req.csrfToken() });
+  } catch (e) {
+    console.error("Error generating CSRF token:", e);
+    return res.status(403).json({ message: "Failed to generate CSRF token" });
+  }
+});
 
 router.post(
   "/login",
@@ -65,47 +86,72 @@ router.post(
   async (req, res) => {
     try {
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
-        return res.status(400).json({
-          status: 400,
-          errors: errors.array(),
-          message: "Incorrect entrance data",
-        });
+        return res
+          .status(400)
+          .json({ errors: errors.array(), message: "Incorrect login data" });
       }
+
       const { email, password } = req.body;
 
       const user = await User.findOne({ email });
-
       if (!user) {
-        return res.status(400).json({
-          status: 400,
-          message: "Your Email is not founded!",
-        });
+        return res.status(400).json({ message: "Incorrect password or email" });
       }
+      const isMatch = await bcrypt.compare(password, user.password);
 
-      const isPasswordMatched = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordMatched) {
-        return res.status(400).json({
-          status: 400,
-          message: "Your Password is not correct!",
-        });
+      if (!isMatch) {
+        return res.status(400).json({ message: "Incorrect password or email" });
       }
 
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, {
         expiresIn: "24h",
       });
 
-      return res.json({ token, userId: user.id });
-    } catch (e) {
-      res.status(500).json({
-        status: 500,
-        message: "Error occurred while authorization",
+      res.cookie("jwtToken", token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
+
+      return res
+        .status(200)
+        .json({ message: "Logged in successfully", status: "authenticated" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error occurred during login", error });
     }
-    f;
   }
 );
+
+router.post("/logout", (req, res) => {
+  if (!req.cookies.jwtToken) {
+    return res.status(400).json({ message: "No active session found" });
+  }
+
+  try {
+    res.clearCookie("jwtToken", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "strict",
+    });
+
+    res.clearCookie("csrf-token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "strict",
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Logged out successfully", status: "loggedOut" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error occurred during logout", error });
+  }
+});
 
 module.exports = router;

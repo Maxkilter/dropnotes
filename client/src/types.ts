@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { AlertProps } from "@material-ui/lab/Alert";
 
-export interface NoteProps {
+export interface NoteType {
   _id: string;
   title?: string;
   body: string;
@@ -13,7 +13,14 @@ export interface NoteState {
   body: string;
 }
 
-export type NoteMenuProps = Omit<NoteProps, "date" | "_id"> & {
+export interface ChatNoteProps {
+  isOpen: boolean;
+  setIsChatNoteOpen: (isOpen: boolean) => void;
+  title?: string;
+  body?: { role: string; content: string }[];
+  id?: string;
+}
+export type NoteMenuProps = Omit<NoteType, "date" | "_id"> & {
   id: string;
 };
 
@@ -38,8 +45,4 @@ export enum LoaderTypes {
 
 export interface LoaderProps {
   type: LoaderTypes;
-}
-
-export interface NavbarProps {
-  isAuthenticated: boolean;
 }

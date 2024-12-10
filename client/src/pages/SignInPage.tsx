@@ -1,11 +1,5 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,8 +10,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Loader from "../components/Loader";
-import { StoreContext } from "../appStore";
+import { Loader } from "../components/Loader";
 import { useRequest } from "../hooks";
 import { LoaderTypes } from "../types";
 import { isNoFormErrors, validate } from "../utils";
@@ -42,10 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignInPage = () => {
+export const SignInPage = () => {
   const classes = useStyles();
-  const { logIn, setNotification } = useContext(StoreContext);
-  const { isLoading, request, error, clearError } = useRequest();
+  const { isLoading, request, fetchCsrfToken } = useRequest();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     email: "",
@@ -53,17 +46,6 @@ const SignInPage = () => {
   });
 
   const [formError, setFormError] = useState({ email: "" });
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError, setNotification]);
 
   const changeHandler = useCallback(
     (event: ChangeEvent<HTMLFormElement>) => {
@@ -85,20 +67,25 @@ const SignInPage = () => {
 
       const error = validate({ email: form.email });
       if (isNoFormErrors(error)) {
-        try {
-          const data = await request(
-            "/api/auth/login",
-            "POST",
-            JSON.stringify({ ...form }),
-            { "Content-type": "application/json" }
-          );
-          logIn(data.token, data.userId);
-        } catch (e) {}
+        const csrfToken = await fetchCsrfToken();
+
+        const response = await request("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ ...form }),
+          headers: {
+            "Content-Type": "application/json",
+            "X-Csrf-Token": csrfToken,
+          },
+        });
+
+        if (response?.status === "authenticated") {
+          navigate("/");
+        }
       } else {
         setFormError(error);
       }
     },
-    [form, logIn, request]
+    [form, request, navigate, fetchCsrfToken]
   );
 
   if (isLoading) {
@@ -166,5 +153,3 @@ const SignInPage = () => {
     </Container>
   );
 };
-
-export default SignInPage;

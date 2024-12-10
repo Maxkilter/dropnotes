@@ -7,7 +7,7 @@
     "start": "yarn --cwd server start",
     "server": "yarn --cwd server dev",
     "client": "yarn --cwd client start",
-    "watch": "yarn run server & yarn run client",
+    "dev": "yarn run server & yarn run client",
     "client:install": "yarn --cwd client install",
     "server:install": "yarn --cwd server install",
     "install-app": "yarn client:install && yarn server:install",

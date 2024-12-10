@@ -1,37 +1,35 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Loader from "./components/Loader";
-import navigation from "./routes";
-import Notification from "./components/Notification";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
+import { Notification } from "./components/Notification";
 import { StoreContext } from "./appStore";
-import { LoaderTypes } from "./types";
+import { NotesPage } from "./pages/NotesPage";
+import { SignInPage } from "./pages/SignInPage";
+import { SignUpPage } from "./pages/SignUpPage";
 
 import "./App.css";
 
-const App = () => {
-  const { token, isReady, notification, setNotification } =
-    useContext(StoreContext);
-  const { isOpen, message, severity } = notification;
-  const isAuthenticated = !!token;
-  const routes = navigation(isAuthenticated);
-
-  if (!isReady) {
-    return <Loader type={LoaderTypes.darken} />;
-  }
+export const App = () => {
+  const {
+    notification: { isOpen, message, severity },
+    setNotification,
+  } = useContext(StoreContext);
 
   return (
-    <Router>
-      <Navbar isAuthenticated={isAuthenticated} />
-      {routes}
+    <>
       <Notification
         isOpen={isOpen}
         setIsOpen={setNotification}
         message={message}
         severity={severity}
       />
-    </Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<NotesPage />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="*" element={<Navigate to="/sign-up" replace />} />
+      </Routes>
+    </>
   );
 };
-
-export default App;

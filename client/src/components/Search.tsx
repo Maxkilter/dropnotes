@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import SearchIcon from "@material-ui/icons/Search";
-import ClearIcon from "@material-ui/icons/Clear";
+import { Search as SearchIcon, Clear as ClearIcon } from "@material-ui/icons";
 import InputBase from "@material-ui/core/InputBase";
 import {
   createStyles,
@@ -10,7 +9,7 @@ import {
 } from "@material-ui/core/styles";
 import { debounce, DebouncedFunc } from "lodash";
 import { useNoteAction } from "../hooks";
-import Loader from "./Loader";
+import { Loader } from "./Loader";
 import { LoaderTypes } from "../types";
 import { setFocus } from "../utils";
 
@@ -61,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const Search = () => {
+export const Search = () => {
   const classes = useStyles();
   const [prevSearchFn, setPrevSearchFn] = useState<DebouncedFunc<
     (query: string) => Promise<void>
@@ -131,5 +130,3 @@ const Search = () => {
     </>
   );
 };
-
-export default Search;

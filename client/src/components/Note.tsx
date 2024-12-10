@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import NoteMenu from "./NoteMenu";
-import EditNote from "./EditNote";
-import ChatNote from "./ChatNote";
+import {
+  Typography,
+  CardContent,
+  CardActionArea,
+  Card,
+  makeStyles,
+} from "@material-ui/core";
+import { NoteMenu } from "./NoteMenu";
+import { EditNote } from "./EditNote";
+import { ChatNote } from "./ChatNote";
 import isEmpty from "lodash/isEmpty";
-import { makeStyles } from "@material-ui/core/styles";
 import { ChatNotePreview } from "./ChatNotePreview";
-import { NoteProps } from "../types";
+import { NoteType } from "../types";
 
 const useStyles = makeStyles({
   root: {
@@ -54,7 +56,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Note = ({ note }: { note: NoteProps }) => {
+export const Note = ({ note }: { note: NoteType }) => {
   const { title, body, _id: id } = note;
   const classes = useStyles();
   const [isSimpleNoteOpen, setIsSimpleNoteOpen] = useState(false);
@@ -81,7 +83,10 @@ const Note = ({ note }: { note: NoteProps }) => {
         <CardActionArea>
           <CardContent className={classes.content} onClick={openNote}>
             {isChat ? (
-              <ChatNotePreview messages={chatMessages} title={title} />
+              <ChatNotePreview
+                messages={chatMessages}
+                title={title as string}
+              />
             ) : (
               <>
                 {title && (
@@ -136,12 +141,10 @@ const Note = ({ note }: { note: NoteProps }) => {
           isOpen={isChatNoteOpen}
           setIsChatNoteOpen={setIsChatNoteOpen}
           id={id}
-          title={title}
+          title={title as string}
           body={chatMessages}
         />
       )}
     </>
   );
 };
-
-export default Note;

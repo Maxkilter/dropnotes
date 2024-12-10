@@ -6,8 +6,8 @@ import React, {
   useEffect,
 } from "react";
 import chatGPTicon from "../images/chatGPT_logo.png";
-import Loader from "./Loader";
-import ChatNote from "./ChatNote";
+import { Loader } from "./Loader";
+import { ChatNote } from "./ChatNote";
 import { useNoteAction, useOutsideClick } from "../hooks";
 import {
   noteDefaultState,
@@ -19,7 +19,7 @@ import { LoaderTypes } from "../types";
 
 import "../styles/NewNoteStyles.scss";
 
-const NewNote = () => {
+export const NewNote = () => {
   const [isAddingFormExpanded, setIsAddingFormExpanded] = useState(false);
   const [note, setNote] = useState(noteDefaultState);
   const [isChatNoteOpen, setIsChatNoteOpen] = useState(false);
@@ -53,7 +53,11 @@ const NewNote = () => {
 
   const ChatButton = () => {
     return (
-      <button className="chat-button" onClick={() => setIsChatNoteOpen(true)}>
+      <button
+        className="chat-button"
+        onClick={() => setIsChatNoteOpen(true)}
+        disabled={isLoading}
+      >
         <img src={chatGPTicon} alt="chat GPT icon" width={22} />
         <div>Chat Note</div>
       </button>
@@ -117,5 +121,3 @@ const NewNote = () => {
     </div>
   );
 };
-
-export default NewNote;

@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactElement, Ref } from "react";
-import Slide, { SlideProps } from "@material-ui/core/Slide";
+import { Slide, SlideProps } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions";
 
 export const TransitionComponent = forwardRef(

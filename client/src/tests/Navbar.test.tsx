@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { Navbar } from "../components/Navbar";
 
 describe("Navbar component tests", () => {
   afterEach(cleanup);

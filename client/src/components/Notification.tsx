@@ -11,7 +11,7 @@ const Alert = (props: AlertProps) => {
   return <MuiAlert elevation={7} variant="standard" {...props} />;
 };
 
-const Notification = (props: NotificationProps) => {
+export const Notification = memo((props: NotificationProps) => {
   const { isOpen, setIsOpen, message, severity } = props;
 
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
@@ -33,6 +33,4 @@ const Notification = (props: NotificationProps) => {
       </Alert>
     </Snackbar>
   );
-};
-
-export default memo(Notification);
+});

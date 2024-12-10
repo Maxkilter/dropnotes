@@ -1,5 +1,4 @@
 import { Color } from "@material-ui/lab";
-import { defaultNotificationState } from "../utils";
 
 export const mockNotes = [
   {
@@ -16,14 +15,13 @@ export const mockStore = {
   notes: [],
   token: null,
   userId: null,
-  notification: defaultNotificationState,
-  logIn: (jwtToken: string, id: string) => {},
+  notification: {
+    isOpen: false,
+    severity: "error",
+    message: "Something went wrong",
+  },
   logOut: () => {},
-  setNotes: (value: []) => {},
-  setIsNoMatching: (value: boolean) => {},
-  setNotification: (value: {
-    isOpen: boolean;
-    message: string;
-    severity: Color;
-  }) => {},
+  setNotes: () => {},
+  setIsNoMatching: () => {},
+  setNotification: () => {},
 };

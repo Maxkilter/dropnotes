@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const Note = require("../models/Note");
-const authMid = require("../middleware/auth.middleware");
+const authMiddleware = require("../middleware/auth.middleware");
 const openai = require("../modules/openai.js");
 const textToSpeechConverter = require("../modules/textToSpeechConverter.js");
 const multer = require("multer");
@@ -19,7 +19,7 @@ const removeFile = async (filePath) => {
   }
 };
 
-router.post("/create", authMid, async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
   try {
     const { title, body } = req.body;
 
@@ -31,20 +31,22 @@ router.post("/create", authMid, async (req, res) => {
 
     await note.save();
 
-    res.status(201).json({ note });
+    return res.status(201).json({ note });
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while creating a note" });
+    console.error(`Error occurred while creating a note: ${e.message}`);
+    return res
+      .status(500)
+      .json({ message: "Error occurred while creating a note" });
   }
 });
 
 router.post("/chat", async (req, res) => {
   try {
     const chatResponse = await openai.chat(req.body.data);
-    res.json(chatResponse);
+    return res.json(chatResponse);
   } catch (e) {
-    res
-      .status(500)
-      .json({ message: `Error while chat completion: ${e.message}` });
+    console.error(`Error while chat completion: ${e.message}`);
+    return res.status(500).json({ message: `Error while chat completion` });
   }
 });
 
@@ -67,11 +69,12 @@ router.post("/transcription", upload.single("audio"), async (req, res) => {
       return res.json(text);
     }
 
-    res.json("");
+    return res.json("");
   } catch (e) {
-    res
+    console.error(`Error while voice to text request: ${e.message}`);
+    return res
       .status(500)
-      .json({ message: `Error while voice to text request: ${e.message}` });
+      .json({ message: "Error while voice to text request" });
   }
 });
 router.post("/speech", async (req, res) => {
@@ -82,61 +85,75 @@ router.post("/speech", async (req, res) => {
       text,
       voiceParameters
     );
-    res.json(speech);
+    return res.json(speech);
   } catch (e) {
-    res
+    console.error(`Error while voice to text request: ${e.message}`);
+    return res
       .status(500)
-      .json({ message: `Error while text to speech request: ${e.message}` });
+      .json({ message: `Error while text to speech request` });
   }
 });
 
-router.get("/search/:query", authMid, async (req, res) => {
+router.get("/search/:query", authMiddleware, async (req, res) => {
   try {
     const notes = await Note.find({
       owner: req.user.userId,
       $text: { $search: req.params.query },
     }).sort({ date: -1 });
-    res.json(notes);
+    return res.json(notes);
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while searching" });
+    console.error(`Error while searching notes: ${e.message}`);
+    return res.status(500).json({ message: "Error occurred while searching" });
   }
 });
 
-router.get("/", authMid, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const notes = await Note.find({
       owner: req.user.userId,
     }).sort({ date: -1 });
-    res.json(notes);
+    return res.status(200).json(notes);
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while fetching notes" });
+    console.error(`Error while fetching notes: ${e.message}`);
+    return res
+      .status(500)
+      .json({ message: "Error occurred while fetching notes" });
   }
 });
 
-router.get("/:id", authMid, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
-    res.json(note);
+    return res.status(200).json(note);
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while fetching a note" });
+    console.error(`Error occurred while fetching a note: ${e.message}`);
+    return res
+      .status(500)
+      .json({ message: "Error occurred while fetching a note" });
   }
 });
 
-router.put("/:id", authMid, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const note = await Note.findByIdAndUpdate(req.params.id, req.body);
-    res.json(note);
+    return res.status(200).json(note);
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while updating a note" });
+    console.error(`Error while updating note: ${e.message}`);
+    return res
+      .status(500)
+      .json({ message: "Error occurred while updating a note" });
   }
 });
 
-router.delete("/:id", authMid, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     await Note.findByIdAndDelete(req.params.id);
-    res.json(200);
+    return res.json(200);
   } catch (e) {
-    res.status(500).json({ message: "Error occurred while deleting a note" });
+    console.error(`Error while deleting note: ${e.message}`);
+    return res
+      .status(500)
+      .json({ message: "Error occurred while deleting a note" });
   }
 });
 

@@ -1,9 +1,9 @@
 import React from "react";
-import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Typography, makeStyles } from "@material-ui/core";
 import { chatRoles } from "./ChatNote";
 
 import "../styles/ChatNotePreviewStyles.scss";
+import { ChatNoteProps } from "../types";
 
 const useStyles = makeStyles({
   body1: {
@@ -11,7 +11,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const ChatNotePreview = ({ messages, title }) => {
+export const ChatNotePreview = ({
+  messages,
+  title,
+}: {
+  messages: ChatNoteProps["body"];
+  title: string;
+}) => {
   const classes = useStyles();
   return (
     <div className="chat-note-pveview-wrapper">
@@ -26,7 +32,7 @@ export const ChatNotePreview = ({ messages, title }) => {
       </div>
       <div className="chat-note-preview-container">
         <div className="chat-note-preview-messages-container">
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <div
               key={index}
               className={

@@ -8,7 +8,7 @@ import "../styles/NoNotesPlaceholderStyles.scss";
 const noNotesText = "Notes you add appear here";
 const noNotesFoundText = "No matching results";
 
-const NoNotesPlaceholder = () => {
+export const NoNotesPlaceholder = () => {
   const { isNoMatching } = useContext(StoreContext);
 
   return (
@@ -26,5 +26,3 @@ const NoNotesPlaceholder = () => {
     </div>
   );
 };
-
-export default NoNotesPlaceholder;
