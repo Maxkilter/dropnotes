@@ -3,9 +3,9 @@ import React, {
   FormEvent,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,7 +15,7 @@ import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import Loader from "../components/Loader";
+import { Loader } from "../components/Loader";
 import { makeStyles } from "@material-ui/core/styles";
 import { StoreContext } from "../appStore";
 import { useRequest } from "../hooks";
@@ -79,11 +79,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUpPage = () => {
+export const SignUpPage = () => {
   const classes = useStyles();
-  const { logIn, setNotification } = useContext(StoreContext);
+  const { setNotification } = useContext(StoreContext);
+  const navigate = useNavigate();
 
-  const { request, isLoading, error, clearError } = useRequest();
+  const { request, isLoading, fetchCsrfToken } = useRequest();
 
   const [form, setForm] = useState({
     firstName: "",
@@ -93,17 +94,6 @@ const SignUpPage = () => {
   });
 
   const [formErrors, setFormErrors] = useState({ email: "", password: "" });
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError, setNotification]);
 
   const changeHandler = useCallback(
     (event: ChangeEvent<HTMLFormElement>) => {
@@ -119,7 +109,7 @@ const SignUpPage = () => {
         setFormErrors({ ...formErrors, password: "" });
       }
     },
-    [form, setForm, formErrors, setFormErrors]
+    [form, setForm, formErrors, setFormErrors],
   );
 
   const signUpHandler = useCallback(
@@ -128,39 +118,43 @@ const SignUpPage = () => {
 
       const errors = validate({ email: form.email, password: form.password });
       if (isNoFormErrors(errors)) {
-        try {
-          const signUpData = await request(
-            "/api/auth/register",
-            "POST",
-            JSON.stringify({
-              ...form,
-            }),
-            { "Content-type": "application/json" }
-          );
+        const csrfToken = await fetchCsrfToken();
 
+        const signUpData = await request("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            ...form,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "X-Csrf-Token": csrfToken,
+          },
+        });
+
+        if (signUpData?.status === "registered") {
           setNotification({
             isOpen: true,
             message: signUpData.message,
             severity: "success",
           });
 
-          const signInData = await request(
-            "/api/auth/login",
-            "POST",
-            JSON.stringify({
+          const response = await request("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
               email: form.email,
               password: form.password,
             }),
-            { "Content-type": "application/json" }
-          );
+          });
 
-          logIn(signInData.token, signInData.userId);
-        } catch (e) {}
+          if (response?.status === "authenticated") {
+            navigate("/");
+          }
+        }
       } else {
         setFormErrors(errors);
       }
     },
-    [form, logIn, request, setNotification]
+    [form, request, setNotification, fetchCsrfToken, navigate],
   );
 
   return (
@@ -279,5 +273,3 @@ const SignUpPage = () => {
     </div>
   );
 };
-
-export default SignUpPage;

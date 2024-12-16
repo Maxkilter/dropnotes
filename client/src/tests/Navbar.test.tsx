@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { Navbar } from "../components/Navbar";
 
 describe("Navbar component tests", () => {
   afterEach(cleanup);
@@ -8,7 +9,7 @@ describe("Navbar component tests", () => {
     render(
       <Router>
         <Navbar isAuthenticated />
-      </Router>
+      </Router>,
     );
 
     const title = document.getElementsByTagName("h5")[0];
@@ -23,7 +24,7 @@ describe("Navbar component tests", () => {
     render(
       <Router>
         <Navbar isAuthenticated={false} />
-      </Router>
+      </Router>,
     );
 
     expect(screen.queryByTestId("search")).not.toBeInTheDocument();
@@ -33,7 +34,7 @@ describe("Navbar component tests", () => {
     const { rerender } = render(
       <Router>
         <Navbar isAuthenticated={false} />
-      </Router>
+      </Router>,
     );
 
     expect(screen.getByTestId("lock-icon")).toBeInTheDocument();
@@ -41,7 +42,7 @@ describe("Navbar component tests", () => {
     rerender(
       <Router>
         <Navbar isAuthenticated />
-      </Router>
+      </Router>,
     );
 
     fireEvent.click(screen.getByTestId("profile-icon"));

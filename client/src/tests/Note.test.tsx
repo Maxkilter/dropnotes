@@ -1,6 +1,6 @@
 import { cleanup, render, screen, fireEvent } from "@testing-library/react";
-import Note from "../components/Note";
-import { mockNotes } from "./moks";
+import { Note } from "../components/Note";
+import { mockNotes } from "./mockups";
 
 describe("Note component tests", () => {
   afterEach(cleanup);

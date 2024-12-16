@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import {
+  Backdrop,
+  CircularProgress,
+  useMediaQuery,
+  LinearProgress,
+} from "@material-ui/core";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import { LinearProgress } from "@material-ui/core";
 import { LoaderProps, LoaderTypes } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       left: 1,
     },
-  })
+  }),
 );
 
 export const DotsProgress = ({ text }: { text: string }) => {
@@ -63,7 +65,7 @@ export const DotsProgress = ({ text }: { text: string }) => {
   );
 };
 
-const Loader = ({ type }: LoaderProps) => {
+export const Loader = ({ type }: LoaderProps) => {
   const classes = useStyles();
 
   if (type === LoaderTypes.darken) {
@@ -94,5 +96,3 @@ const Loader = ({ type }: LoaderProps) => {
 
   return <DotsProgress text="Loading" />;
 };
-
-export default Loader;

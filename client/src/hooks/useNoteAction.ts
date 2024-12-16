@@ -1,161 +1,83 @@
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { StoreContext } from "../appStore";
 import { useRequest } from "./useRequest";
-import { isNoNotes } from "../utils";
 
 export const useNoteAction = () => {
-  const { token, setNotes, setNotification, setIsNoMatching } =
-    useContext(StoreContext);
-  const { request, isLoading, clearError, error } = useRequest();
-
-  useEffect(() => {
-    if (error) {
-      setNotification({
-        isOpen: true,
-        message: error,
-        severity: "error",
-      });
-      clearError();
-    }
-  }, [error, clearError, setNotification]);
-
-  const headers: { Authorization: string; "Content-type"?: string } =
-    useMemo(() => {
-      return {
-        Authorization: `Bearer ${token}`,
-      };
-    }, [token]);
+  const { setNotes, setIsNoMatching } = useContext(StoreContext);
+  const { request, isLoading } = useRequest();
 
   const fetchNotes = useCallback(async () => {
-    try {
-      const notes = await request("/api/notes", "GET", null, headers);
-      if (notes) {
-        setIsNoMatching(false);
-        setNotes(notes);
-      }
-    } catch (e) {
-      if (e instanceof Error)
-        console.error("Error while fetching notes ", e.message);
+    const notes = await request("/api/notes");
+    if (notes) {
+      setIsNoMatching(false);
+      setNotes(notes);
+      return notes;
     }
-  }, [headers, request, setNotes, setIsNoMatching]);
+  }, [request, setNotes, setIsNoMatching]);
 
   const searchNotes = useCallback(
     async (query: string) => {
-      try {
-        const notes = await request(
-          `/api/notes/search/${query}`,
-          "GET",
-          null,
-          headers
-        );
-        if (notes) {
-          isNoNotes(notes) ? setIsNoMatching(true) : setIsNoMatching(false);
-          setNotes(notes);
-        }
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while searching notes ", e.message);
+      const notes = await request(`/api/notes/search/${query}`);
+      if (notes) {
+        !notes.length ? setIsNoMatching(true) : setIsNoMatching(false);
+        setNotes(notes);
       }
     },
-    [headers, request, setNotes, setIsNoMatching]
+    [request, setNotes, setIsNoMatching],
   );
 
   const createNote = useCallback(
-    async (title: string | undefined, body: string) => {
-      headers["Content-type"] = "application/json";
-      try {
-        return await request(
-          "/api/notes/create",
-          "POST",
-          JSON.stringify({ title, body }),
-          headers
-        );
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while creating note ", e.message);
-      }
-    },
-    [headers, request]
+    async (title: string | undefined, body: string) =>
+      await request("/api/notes/create", {
+        method: "POST",
+        body: JSON.stringify({ title, body }),
+      }),
+    [request],
   );
 
   const chatRequest = useCallback(
-    async (data) => {
-      try {
-        return await request(
-          "/api/notes/chat",
-          "POST",
-          JSON.stringify({ data }),
-          {
-            "Content-type": "application/json",
-          }
-        );
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while chat request ", e.message);
-      }
-    },
-    [request]
+    async (data) =>
+      await request("/api/notes/chat", {
+        method: "POST",
+        body: JSON.stringify({ data }),
+      }),
+    [request],
   );
 
   const voiceToTextRequest = useCallback(
-    async (data) => {
-      try {
-        return await request("/api/notes/transcription", "POST", data);
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while voice to text request ", e.message);
-      }
-    },
-    [request]
+    async (data) =>
+      await request("/api/notes/transcription", {
+        method: "POST",
+        headers: {
+          "X-Csrf-Token": sessionStorage.getItem("csrfToken"),
+        },
+        body: data,
+      }),
+    [request],
   );
 
   const textToSpeechRequest = useCallback(
-    async (data) => {
-      try {
-        return await request(
-          "/api/notes/speech",
-          "POST",
-          JSON.stringify({ data }),
-          {
-            "Content-type": "application/json",
-          }
-        );
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while text to speech ", e.message);
-      }
-    },
-    [request]
+    async (data) =>
+      await request("/api/notes/speech", {
+        method: "POST",
+        body: JSON.stringify({ data }),
+      }),
+    [request],
   );
 
   const updateNote = useCallback(
-    async (id: string, title: string, body: string) => {
-      headers["Content-type"] = "application/json";
-      try {
-        return await request(
-          `/api/notes/${id}`,
-          "PUT",
-          JSON.stringify({ title, body }),
-          headers
-        );
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while updating note ", e.message);
-      }
-    },
-    [headers, request]
+    async (id: string, title: string, body: string) =>
+      await request(`/api/notes/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ title, body }),
+      }),
+    [request],
   );
 
   const deleteNote = useCallback(
-    async (id: string) => {
-      try {
-        return await request(`api/notes/${id}`, "DELETE", null, headers);
-      } catch (e) {
-        if (e instanceof Error)
-          console.error("Error while deleting note ", e.message);
-      }
-    },
-    [headers, request]
+    async (id: string) =>
+      await request(`api/notes/${id}`, { method: "DELETE" }),
+    [request],
   );
 
   return {

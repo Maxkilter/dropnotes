@@ -1,11 +1,11 @@
 import React, { forwardRef, ReactElement, Ref } from "react";
-import Slide, { SlideProps } from "@material-ui/core/Slide";
+import { Slide, SlideProps } from "@material-ui/core";
 import { TransitionProps } from "@material-ui/core/transitions";
 
 export const TransitionComponent = forwardRef(
   (
     props: TransitionProps & { children?: ReactElement<any, any> },
-    ref: Ref<unknown>
+    ref: Ref<unknown>,
   ) => {
     const directions = ["up", "right", "down", "left"];
     const setDirection = () => {
@@ -13,5 +13,5 @@ export const TransitionComponent = forwardRef(
       return directions[random] as SlideProps["direction"];
     };
     return <Slide direction={setDirection()} ref={ref} {...props} />;
-  }
+  },
 );

@@ -5,18 +5,11 @@ import {
   RefObject,
   SetStateAction,
 } from "react";
-import { NoteProps, NoteState } from "./types";
-import { Color } from "@material-ui/lab";
+import { NoteState } from "./types";
 
 export const noteDefaultState = {
   title: "",
   body: "",
-};
-
-export const defaultNotificationState = {
-  isOpen: false,
-  message: "",
-  severity: "info" as Color,
 };
 
 export const setFocus = (element: RefObject<HTMLDivElement>) =>
@@ -24,7 +17,7 @@ export const setFocus = (element: RefObject<HTMLDivElement>) =>
 
 export const handleEnterPress = (
   event: KeyboardEvent<HTMLDivElement>,
-  element: RefObject<HTMLDivElement>
+  element: RefObject<HTMLDivElement>,
 ) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -35,7 +28,7 @@ export const handleEnterPress = (
 export const handleChange = (
   e: ChangeEvent<HTMLDivElement>,
   note: NoteState,
-  setNote: Dispatch<SetStateAction<NoteState>>
+  setNote: Dispatch<SetStateAction<NoteState>>,
 ) =>
   setNote({
     ...note,
@@ -72,5 +65,3 @@ export const isNoFormErrors = (errors: { [key: string]: string }) => {
   for (const error in errors) if (!!errors[error]) return false;
   return true;
 };
-
-export const isNoNotes = (notes: NoteProps[]) => notes.length === 0;

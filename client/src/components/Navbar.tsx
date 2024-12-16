@@ -1,19 +1,22 @@
-import React, { useState, MouseEvent, useContext } from "react";
+import React, { useState, MouseEvent } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  MenuItem,
+  Menu,
+} from "@material-ui/core";
+import {
+  Lock as LockIcon,
+  ExitToApp as ExitToAppIcon,
+  AccountCircle,
+  MoreVert as MoreIcon,
+} from "@material-ui/icons";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import LockIcon from "@material-ui/icons/Lock";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MoreIcon from "@material-ui/icons/MoreVert";
-import Search from "./Search";
-import { useNavigate } from "react-router-dom";
-import { StoreContext } from "../appStore";
-import { NavbarProps } from "../types";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Search } from "./Search";
+import { useRequest } from "../hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,20 +54,21 @@ const useStyles = makeStyles((theme: Theme) =>
         display: "none",
       },
     },
-  })
+  }),
 );
 
-const Navbar = ({ isAuthenticated }: NavbarProps) => {
-  const { logOut } = useContext(StoreContext);
+export const Navbar = () => {
+  const { request } = useRequest();
   const navigate = useNavigate();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
+  const { pathname } = useLocation();
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  const isMainPage = pathname === "/";
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -82,10 +86,14 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleOut = (event: MouseEvent<HTMLElement>) => {
+  const handleOut = async (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    logOut();
-    navigate("/sign-in");
+
+    const response = await request("/api/auth/logout", { method: "POST" });
+    if (response?.status === "loggedOut") {
+      sessionStorage.removeItem("csrfToken");
+      navigate("/sign-in");
+    }
     handleMenuClose();
   };
 
@@ -102,7 +110,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {isAuthenticated ? (
+      {isMainPage ? (
         <MenuItem onClick={handleOut}>
           <ExitToAppIcon />
           <span>Log out</span>
@@ -157,7 +165,7 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
               Drop notes
             </Typography>
           </div>
-          {isAuthenticated && <Search />}
+          {isMainPage && <Search />}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton
@@ -190,5 +198,3 @@ const Navbar = ({ isAuthenticated }: NavbarProps) => {
     </div>
   );
 };
-
-export default Navbar;

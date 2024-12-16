@@ -1,16 +1,21 @@
 {
   "name": "dropnotes",
-  "version": "5.1.0",
+  "version": "7.0.0",
   "description": "",
-  "main": "app.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node app.js",
-    "server": "nodemon app.js",
+    "start": "yarn --cwd server start",
+    "server": "yarn --cwd server dev",
     "client": "yarn --cwd client start",
+    "dev": "yarn run server & yarn run client",
     "client:install": "yarn --cwd client install",
-    "client:build": "yarn --cwd client run build",
-    "dev": "cross-env NODE_ENV=development concurrently \"yarn run server\" \"yarn run client\"",
-    "restart": "concurrently \"npx kill-port 5000\" \"yarn run dev\""
+    "server:install": "yarn --cwd server install",
+    "install-app": "yarn client:install && yarn server:install",
+    "clear-port": "npx kill-port 8000",
+    "deploy": "yarn --cwd client build && yarn --cwd server start",
+    "deploy-cluster": "yarn --cwd client build && yarn --cwd server cluster",
+    "prettier": "npx prettier . --check",
+    "prettier:fix": "npx prettier . --write",
+    "reinstall-app": "rm -rf client/node_modules && rm -rf server/node_modules && yarn install-app"
   },
   "keywords": [
     "react",
@@ -18,21 +23,8 @@
   ],
   "author": "Max Boudnik <maxkilter@yahoo.com>",
   "license": "ISC",
-  "dependencies": {
-    "axios": "^1.4.0",
-    "bcryptjs": "^2.4.3",
-    "config": "^3.3.2",
-    "express": "^4.17.1",
-    "express-validator": "^6.6.1",
-    "jsonwebtoken": "9.0.0",
-    "mongoose": "5.13.16",
-    "multer": "^1.4.5-lts.1",
-    "openai": "^3.3.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^5.3.0",
-    "cross-env": "^7.0.2",
-    "nodemon": "^2.0.6",
-    "prettier": "2.8.8"
+    "prettier": "3.4.2"
   }
 }
